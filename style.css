@@ -1,0 +1,89 @@
+table {
+  font-family: Arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+thead {
+  background-color: #ddd;
+}
+
+th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.container {
+  margin-top: 20px;
+}
+
+.add-cpu-time-btn, .remove-cpu-time-btn {
+  font-size: 14px;
+  margin: 0 4px;
+  padding: 4px 8px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+.add-cpu-time-btn:hover, .remove-cpu-time-btn:hover {
+  background-color: #3e8e41;
+}
+
+.add-btn, .remove-btn {
+  font-size: 14px;
+  margin-top: 20px;
+  padding: 6px 10px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+.add-btn:hover, .remove-btn:hover {
+  background-color: #3e8e41;
+}
+
+#calculate, #reset {
+  font-size: 16px;
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+#calculate:hover, #reset:hover {
+  background-color: #3e8e41;
+}
+
+#output {
+  margin-top: 20px;
+}
+
+#context-switch-div {
+  margin-top: 20px;
+}
+
+#context-switch {
+  width: 80px;
+}
+
+h2 {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
