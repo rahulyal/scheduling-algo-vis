@@ -5,91 +5,85 @@
 	<link rel="stylesheet" type="text/css" href="style.css">
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="script.js"></script>
+    <script src="algos/sjf.js"></script>
 </head>
 <body>
-    <form id="algorithms-form">
-        <label for="algo"><h2>Algorithms : </h2></label>
-        <select name="algo" id="algo">
-            <option value="fcfs">First Come First Serve (FCFS)</option>
-            <option value="sjf">Shortest Job First (SJF)</option>
-            <option value="srtf">Shortest Remaining Job First (SRTF)</option>
-            <option value="pnp">Priority (Non Preemptive)</option>
-            <option value="pp">Priority (Preemptive)</option>
-            <option value="rr">Round Robin</option>
-            <option value="lot">Lottery</option>
-        </select>
-    </form>
-    <br>
-	<h2>Process Table</h2>
-  <div class="container">
-    <table class="process-table">
-        <thead>
-            <tr>
-                <th>Process ID</th>
-                <th>Arrival Time</th>
-                <th>CPU Time</th>
-                <th>IO Time</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>P1</td>
-                <td><input type="number" min="0" step="1" id="p1-arrival-time"></td>
-                <td><input type="number" min="1" step="1" id="p1-cpu-time"></td>
-                <td><input type="number" min="0" step="1" id="p1-io-time"></td>
-                <td>
-                  <button type="button" class="add-cpu-time-btn" >+</button>
-                  <button type="button" class="remove-cpu-time-btn">-</button>
-                </td>      
-            </tr>
-            <tr>
-                <td>P2</td>
-                <td><input type="number" min="0" step="1" id="p2-arrival-time"></td>
-                <td><input type="number" min="1" step="1" id="p2-cpu-time"></td>
-                <td><input type="number" min="0" step="1" id="p2-io-time"></td>
-                <td>
-                  <button type="button" class="add-cpu-time-btn">+</button>
-                  <button type="button" class="remove-cpu-time-btn">-</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <button type="button" class="add-btn">Add Process</button>
-    <button type="button" class="remove-btn">Delete Process</button>
-</div>
-    <div id="context-switch-div">
-        <br>
-        <label for="context-switch">Context Switch Time : </label>
-        <input type="number" name="Context Switch" id="context-switch" min="0" step="1" value="0">
-    </div>
-    <br>
+  <form id="algorithms-form">
+    <label for="algo"><h2>Algorithms : </h2></label>
+    <select name="algo" id="algo">
+        <option value="fcfs">First Come First Serve (FCFS)</option>
+        <option value="sjf">Shortest Job First (SJF)</option>
+        <option value="srtf">Shortest Remaining Job First (SRTF)</option>
+        <option value="pnp">Priority (Non Preemptive)</option>
+        <option value="pp">Priority (Preemptive)</option>
+        <option value="rr">Round Robin</option>
+        <option value="lot">Lottery</option>
+    </select>
+  </form>
+  <div id="chan">
+    <p id="cn"> Click on the button to add CPU and IO time</p>
+    <button type="button" onclick="addMoreTimes()">Add Times</button>
+    <button type="button" onclick="deleteTimes()">Delete Times</button>
+  </div>
+  <div>
+    <p id="cn"> Click on the button to add Processes</p>
+    <button type="button" onclick="addRow()">Add Process</button>
+    <button type="button" onclick="deleteRow()">Remove Process</button>
+  </div>
 
-    <button type="button" id="calculate" onclick="calculateGanttChart(),drawChart()";>Calculate</button>
-    <button type="button" id="reset" onClick="window.location.reload();">Reset</button>
-    <div id="output"></div>
-    <h2>Output Table</h2>
-    <div class="container">
-    <table id="output-table">
-        <thead>
-          <tr>
-            <th>Process ID</th>
-            <th>Arrival Time</th>
-            <th>CPU Time</th>
-            <th>IO Time</th>
-            <th>Completion Time</th>
-            <th>Waiting Time</th>
-            <th>Turnaround Time</th>
-            <th>Response Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Rows will be dynamically added here -->
-        </tbody>
-      </table>
-    </div>
-    <br>
-	<h2>Gantt Chart</h2>
-    <div id="chart_div"></div>
+<!-- Processe Table -->
+<h2>Processes</h2>
+
+<table id = "processEntryTable">
+  <tr id = "tableHeadersInput">
+    <th>Process Number</th>
+    <th>Arrival Time</th>
+    <th>CPU Time</th>
+    <th>I/O Time</th>
+
+  </tr>
+  <tr id = "process1">
+    <td>1</td>
+    <td><input type="text" id="1ARR"/></td>
+      <td><input type="text" id="1CPU1", class="cpugroup1" /></td>
+      <td><input type="text" id="1IO1", class="cpugroup1" /></td>
+  </tr>
+  <tr id = "process2">
+    <td>2</td>
+    <td><input type="text" id="2ARR" /></td>
+    <span id = "2cpugroup1">
+      <td><input type="text" id="2CPU1", class="cpugroup1" /></td>
+      <td><input type="text" id="2IO1", class="cpugroup1" /></td>
+    </span>
+
+  </tr>
+</table>
+<br>
+</div>
+<button type="button" onclick="calculateAverage()">Calculate</button>
+<button type="button" onclick="rand()">Verify Process</button>
+</div>
+<br>
+<h2>Results</h2>
+<div class="container">
+  <table id="output-table">
+      <thead>
+        <tr>
+          <th>Process ID</th>
+          <th>Arrival Time</th>
+          <th>CPU Time</th>
+          <th>IO Time</th>
+          <th>Completion Time</th>
+          <th>Waiting Time</th>
+          <th>Turnaround Time</th>
+          <th>Response Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows will be dynamically added here -->
+      </tbody>
+    </table>
+  </div>
+  <br>
 </body>
 </html>

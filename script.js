@@ -1,129 +1,137 @@
-function calculateGanttChart() {
-  // Get the input values for p1
-  const p1ArrivalTime = parseInt(document.getElementById("p1-arrival-time").value);
-  const p1CpuTime = parseInt(document.getElementById("p1-cpu-time").value);
-  const p1IoTime = parseInt(document.getElementById("p1-io-time").value);
+var numberProcesses = 2
+var numberTimes = 1
+var algorithmOption = 0
+//0 - All, 1- FIFO, 2-SJF
 
-  // Get the input values for p2
-  const p2ArrivalTime = parseInt(document.getElementById("p2-arrival-time").value);
-  const p2CpuTime = parseInt(document.getElementById("p2-cpu-time").value);
-  const p2IoTime = parseInt(document.getElementById("p2-io-time").value);
+const arrivalTimes = [];
+const cpuTimes = [];
+//cpuTimes[0] --> 
+const ioTimes = [];
 
-  // Calculate the start and end times for each process
-  const p1StartTime = p1ArrivalTime;
-  const p1EndTime = p1StartTime + p1CpuTime + p1IoTime;
-  const p2StartTime = p2ArrivalTime > p1EndTime ? p2ArrivalTime : p1EndTime;
-  const p2EndTime = p2StartTime + p2CpuTime + p2IoTime;
 
-// Calculate completion time, waiting time, turnaround time and response time for each process
-const p1CompletionTime = p1EndTime;
-const p1WaitingTime = p1StartTime - p1ArrivalTime;
-const p1TurnaroundTime = p1CompletionTime - p1ArrivalTime;
-const p1ResponseTime = p1StartTime - p1ArrivalTime;
+function addRow(){
+    getDataArray()
+    saveDataTable()
+    var processTable =document.getElementById("processEntryTable");
+    if(numberProcesses==10){
+        alert("Maximum Processes is 10!")
+    }else{
+        numberProcesses+=1
+        var rowContent = "<tr id = \"process"+String(numberProcesses)+ "\">\n"
+        rowContent+="<td>"+String(numberProcesses)+"</td>\n"
+        rowContent+="<td><input type=\"text\" id=\"" +  String(numberProcesses)+"ARR\" /></td>\n"
+        for(var j = 1;j<=numberTimes;j++){
+            var rowClass = " class=\"cpugroup"+String(j)+"\""
+            var rowIdCPU= " id=\"" +  String(numberProcesses)+"CPU"+String(j)+"\""
+            var rowIdIO= " id=\"" +  String(numberProcesses)+"IO"+String(j)+"\""
+            rowContent+="<td" +rowClass +"><input type=\"text\""+ rowIdCPU+"/></td>\n"
+            rowContent+="<td" +rowClass +"><input type=\"text\""+ rowIdIO+"/></td>\n"
+        }
+        rowContent+="</tr>\n"
+        processTable.innerHTML+=rowContent
+    }
+}
 
-const p2CompletionTime = p2EndTime;
-const p2WaitingTime = p2StartTime - p2ArrivalTime;
-const p2TurnaroundTime = p2CompletionTime - p2ArrivalTime;
-const p2ResponseTime = p2StartTime - p2ArrivalTime;
+function calculateAverage(){
+    getDataArray()
 
-// Display the output table
-const outputTable = document.getElementById("output-table");
-outputTable.innerHTML = `
-<thead> 
-  <tr> 
-    <th>Process ID</th> 
-    <th>Completion Time</th> 
-    <th>Waiting Time</th> 
-    <th>Turnaround Time</th> 
-    <th>Response Time</th> 
-  </tr>
-</thead> 
-<tbody> 
-  <tr> 
-  <td>P1</td> 
-  <td>${p1CompletionTime}</td> 
-  <td>${p1WaitingTime}</td> 
-  <td>${p1TurnaroundTime}</td>
-  <td>${p1ResponseTime}</td> 
-  </tr> 
-<tr> 
-  <td>P2</td> 
-  <td>${p2CompletionTime}</td> 
-  <td>${p2WaitingTime}</td> 
-  <td>${p2TurnaroundTime}</td> 
-  <td>${p2ResponseTime}</td> 
-</tr>
-</tbody>
-`
-// Show the output table
-outputTable.style.display = "table";
+    console.log(arrivalTimes, cpuTimes, ioTimes);
+}
 
-google.charts.load('current', {'packages':['gantt']});
-google.charts.setOnLoadCallback(drawChart);
+function getDataArray(){//Stores data into arrays
+    for( var i = 1; i <=numberProcesses; i++ ) {
+        arrivalTimes[i-1]= parseFloat(document.getElementById(String(i)+"ARR").value)
+        cpuRowArray=[]
+        ioRowArray=[]
+        for(var j = 1;j<=numberTimes;j++){
+            cpuRowArray[j]= parseFloat(document.getElementById(String(i)+"CPU"+String(j)).value)
+            ioRowArray[j]= parseFloat(document.getElementById(String(i)+"IO"+String(j)).value)
 
-var data = new google.visualization.DataTable();
-data.addColumn('string', 'Task ID');
-data.addColumn('string', 'Task Name');
-data.addColumn('date', 'Start Date');
-data.addColumn('date', 'End Date');
-data.addColumn('number', 'Duration');
-data.addColumn('number', 'Percent Complete');
-data.addColumn('string', 'Dependencies');
+        }
+        cpuTimes[i-1]=cpuRowArray
+        ioTimes[i-1]= ioRowArray
+    }
+}
 
-// Add rows for each task
-data.addRows([
-  ['P1', 'Process 1', new Date(2023, 3, 1), new Date(2023, 3, 1, 0, p1CompletionTime), null, 100, null],
-  ['P2', 'Process 2', new Date(2023, 3, 1, 0, p1CompletionTime + contextSwitchTime), new Date(2023, 3, 1, 0, p1CompletionTime + contextSwitchTime + p2CompletionTime), null, 100, null]
-]);
 
-var options = {
-  height: 275,
-  gantt: {
-    trackHeight: 30
-  }
-};
+function saveDataTable(){//Inserts saved data back into input fields
+    for( var i = 1; i <=numberProcesses; i++ ) {
+        if(isNaN(arrivalTimes[i-1])==false){
+            document.getElementById(String(i)+"ARR").defaultValue = arrivalTimes[i-1]
+        }
+        cpuRowArray=[]
+        ioRowArray=[]
+        for(var j = 1;j<=numberTimes;j++){
+            if(isNaN(cpuTimes[i-1][j])==false){
+                document.getElementById(String(i)+"CPU"+String(j)).defaultValue = cpuTimes[i-1][j]
+            }
+            if(isNaN(ioTimes[i-1][j])==false){
+                document.getElementById(String(i)+"IO"+String(j)).defaultValue = ioTimes[i-1][j]
+            }
+        }
 
-var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
+    }
+    
+}
 
-chart.draw(data, options);
+function deleteRow(){
+    if(numberProcesses>2){
+        const element = document.getElementById("process" +String(numberProcesses));
+        element.remove();
+        numberProcesses-=1
+    }else{
+        alert("Error! Need at least two proccesses.")
+    }
+    
+}
+
+function deleteTimes(){
+    if(numberTimes>1){
+        const timesRemove = document.getElementsByClassName("cpugroup"+String(numberTimes))
+        const headerRemove = document.getElementsByClassName("header"+String(numberTimes))
+        headerRemove[0].remove()
+        headerRemove[0].remove()
+        for(j=0;j<numberProcesses;j++){
+            timesRemove[0].remove()
+            timesRemove[0].remove()
+
+        }
+        numberTimes-=1
+    }else{
+        alert("Error! Need at one CPU/IO Time.")
+    }
+    
+}
+
+
+function addMoreTimes(){
+
+    if(numberTimes==5){
+        alert("Maximum CPU/IO times is 5!")
+    }else{
+        getDataArray()
+        saveDataTable()
+        numberTimes+=1
+        //Increase Columns and Headers:
+        var tableHeaders =document.getElementById("tableHeadersInput");
+        var rowContent = "<th class=\"header"+String(numberTimes)+ "\">CPU Time</th>"
+        rowContent+=" <th class=\"header"+String(numberTimes)+ "\">I/O Time</th>"
+        tableHeaders.innerHTML+=rowContent
+        for( var i = 1; i <=numberProcesses; i++ ) {//Add Input fields
+            var tableRow =document.getElementById("process"+String(i));
+            var rowContent =""
+            var rowIdCPU= " id=\"" +  String(i)+"CPU"+String(numberTimes)+"\""
+            var rowClass = " class=\"cpugroup"+String(numberTimes)+"\""
+            var rowIdIO= " id=\"" +  String(i)+"IO"+String(numberTimes)+"\""
+            rowContent+="<td" +rowClass +"><input type=\"text\""+ rowIdCPU+"/></td>\n"
+            rowContent+="<td" +rowClass +"><input type=\"text\""+ rowIdIO+"/></td>\n</tr>\n"
+            tableRow.innerHTML+=rowContent
+
+        }
+    }
 
 }
-google.charts.load('current', {'packages':['gantt']});
-    google.charts.setOnLoadCallback(drawChart);
 
-    function daysToMilliseconds(days) {
-      return days * 24 * 60 * 60 * 1000;
-    }
-
-    function drawChart() {
-
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Task ID');
-      data.addColumn('string', 'Task Name');
-      data.addColumn('date', 'Start Date');
-      data.addColumn('date', 'End Date');
-      data.addColumn('number', 'Duration');
-      data.addColumn('number', 'Percent Complete');
-      data.addColumn('string', 'Dependencies');
-
-      data.addRows([
-        ['Research', 'Find sources',
-         new Date(2015, 0, 1), new Date(2015, 0, 5), null,  100,  null],
-        ['Write', 'Write paper',
-         null, new Date(2015, 0, 9), daysToMilliseconds(3), 25, 'Research,Outline'],
-        ['Cite', 'Create bibliography',
-         null, new Date(2015, 0, 7), daysToMilliseconds(1), 20, 'Research'],
-        ['Complete', 'Hand in paper',
-         null, new Date(2015, 0, 10), daysToMilliseconds(1), 0, 'Cite,Write'],
-        ['Outline', 'Outline paper',
-         null, new Date(2015, 0, 6), daysToMilliseconds(1), 100, 'Research']
-      ]);
-
-      var options = {
-        height: 275
-      };
-
-      var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
-
-      chart.draw(data, options);
-    }
+function clearArray(arr){
+    arr.splice(0,arr.length)
+}
