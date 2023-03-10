@@ -15,6 +15,14 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     let completionTimes = Array(n).fill(0);
     let waitingTimes = Array(n).fill(0);
     let cpuSums = cpuTimes.map(process => process.reduce((acc, curr) => acc + curr));
+    const cpuStartTimes = Array(n).fill(null).map(_ => []);
+    const cpuEndTimes = Array(n).fill(null).map(_ => []);
+    let cpuTimesCopy = [];
+
+    for (let i = 0; i < cpuTimes.length; i++) {
+      cpuTimesCopy[i] = [...cpuTimes[i]];
+    }
+
 
   while (finishedCount < n) {
     // Check if there are any processes that arrived at the current time
@@ -36,6 +44,11 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     if (runningProcess !== null) {
       cpuTimes[runningProcess][0]--;
       if (cpuTimes[runningProcess][0] === 0) {
+        const cpuStartTime = currentTime - cpuTimesCopy[runningProcess][0];
+        const cpuEndTime = currentTime;
+        // record CPU start and end times for running process
+        cpuStartTimes[runningProcess].push(cpuStartTime);
+        cpuEndTimes[runningProcess].push(cpuEndTime);
         // If the process has no more CPU bursts, it is finished
         if (cpuTimes[runningProcess].length === 1) {
           processStates[runningProcess] = { state: 'terminated', time: currentTime };
@@ -45,9 +58,10 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
           waitingTimes[runningProcess] = turnaroundTimes[runningProcess] - cpuSums[runningProcess];
         } else {
           // If the process has more CPU bursts, it is blocked
-          let ioTime = cpuTimes[runningProcess].shift();
           blockedQueue.push(runningProcess);
           processStates[runningProcess] = { state: 'blocked', time: currentTime };
+          cpuTimes[runningProcess].shift();
+          cpuTimesCopy[runningProcess].shift();
         }
         runningProcess = null;
       }
@@ -95,6 +109,8 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     console.log('Completion times:', completionTimes);
     console.log('Waiting times:', waitingTimes);
     console.log('Total CPU times:', cpuSums);
+    console.log('CPU Start times:', cpuStartTimes);
+    console.log('CPU End times:', cpuEndTimes);
 }
 
 sjfScheduling(arrivalTimes, cpuTimes, ioTimes);
