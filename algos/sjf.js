@@ -1,6 +1,10 @@
+// let arrivalTimes = [0, 2, 6];
+// let cpuTimes = [[6,1], [2], [1]];
+// let ioTimes = [[1], [0], [0]];
+
 let arrivalTimes = [0, 2, 6];
-let cpuTimes = [[6,1], [2], [1]];
-let ioTimes = [[1], [0], [0]];
+let cpuTimes = [[6,1], [2,NaN], [1,NaN]];
+let ioTimes = [[1,NaN], [NaN,NaN], [NaN,NaN]];
 
 function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     const n = arrivalTimes.length;
@@ -14,7 +18,8 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     let turnaroundTimes = Array(n).fill(0);
     let completionTimes = Array(n).fill(0);
     let waitingTimes = Array(n).fill(0);
-    let cpuSums = cpuTimes.map(process => process.reduce((acc, curr) => acc + curr));
+    // let cpuSums = cpuTimes.map(process => process.reduce((acc, curr) => acc + curr));
+    let cpuSums = cpuTimes.map(process => process.filter(t => !isNaN(t)).reduce((acc, curr) => acc + curr, 0));
     const cpuStartTimes = Array(n).fill(null).map(_ => []);
     const cpuEndTimes = Array(n).fill(null).map(_ => []);
     let cpuTimesCopy = [];
@@ -35,22 +40,24 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
 
     // Sort the ready queue by remaining CPU time
     readyQueue.sort((a, b) => {
-      const remainingTimeA = cpuTimes[a].reduce((acc, curr) => acc + curr);
-      const remainingTimeB = cpuTimes[b].reduce((acc, curr) => acc + curr);
+      // const remainingTimeA = cpuTimes[a].reduce((acc, curr) => acc + curr);
+      // const remainingTimeB = cpuTimes[b].reduce((acc, curr) => acc + curr);
+      const remainingTimeA = cpuTimes[a].filter(t => !isNaN(t)).reduce((acc, curr) => acc + curr, 0);
+      const remainingTimeB = cpuTimes[b].filter(t => !isNaN(t)).reduce((acc, curr) => acc + curr, 0);
       return remainingTimeA - remainingTimeB;
     });
 
     // Check if the running process has finished its CPU burst
     if (runningProcess !== null) {
       cpuTimes[runningProcess][0]--;
-      if (cpuTimes[runningProcess][0] === 0) {
+      if (isNaN(cpuTimes[runningProcess][0]) || cpuTimes[runningProcess][0] === 0) {
         const cpuStartTime = currentTime - cpuTimesCopy[runningProcess][0];
         const cpuEndTime = currentTime;
         // record CPU start and end times for running process
         cpuStartTimes[runningProcess].push(cpuStartTime);
         cpuEndTimes[runningProcess].push(cpuEndTime);
         // If the process has no more CPU bursts, it is finished
-        if (cpuTimes[runningProcess].length === 1) {
+        if (cpuTimes[runningProcess].length === 1 || isNaN(cpuTimes[runningProcess][1])) {
           processStates[runningProcess] = { state: 'terminated', time: currentTime };
           finishedCount++;
           completionTimes[runningProcess] = currentTime;
@@ -103,6 +110,7 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     
     // Increment the current time
     currentTime++;
+    console.log('Finished Count:', finishedCount);
   }
     console.log('Response times:', responseTimes);
     console.log('Turnaround times:', turnaroundTimes);

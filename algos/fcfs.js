@@ -1,6 +1,10 @@
+// let arrivalTimes = [0, 2, 6];
+// let cpuTimes = [[6, 1], [2], [1]];
+// let ioTimes = [[1], [0], [0]];
+
 let arrivalTimes = [0, 2, 6];
-let cpuTimes = [[6, 1], [2], [1]];
-let ioTimes = [[1], [0], [0]];
+let cpuTimes = [[6,1], [2,NaN], [1,NaN]];
+let ioTimes = [[1,NaN], [NaN,NaN], [NaN,NaN]];
 
 function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
   const n = arrivalTimes.length;
@@ -14,7 +18,14 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
   let turnaroundTimes = Array(n).fill(0);
   let completionTimes = Array(n).fill(0);
   let waitingTimes = Array(n).fill(0);
-  let cpuSums = cpuTimes.map(process => process.reduce((acc, curr) => acc + curr));
+  // let cpuSums = cpuTimes.map(process => process.reduce((acc, curr) => acc + curr));
+  let cpuSums = cpuTimes.map(process => process.filter(t => !isNaN(t)).reduce((acc, curr) => acc + curr, 0));
+  const cpuStartTimes = Array(n).fill(null).map(_ => []);
+  const cpuEndTimes = Array(n).fill(null).map(_ => []);
+  let cpuTimesCopy = [];
+  for (let i = 0; i < cpuTimes.length; i++) {
+    cpuTimesCopy[i] = [...cpuTimes[i]];
+  }
 
   while (finishedCount < n) {
     // Check if there are any processes that arrived at the current time
@@ -28,9 +39,14 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
     // Check if the running process has finished its CPU burst
     if (runningProcess !== null) {
       cpuTimes[runningProcess][0]--;
-      if (cpuTimes[runningProcess][0] === 0) {
+      if (isNaN(cpuTimes[runningProcess][0]) || cpuTimes[runningProcess][0] === 0) {
+        const cpuStartTime = currentTime - cpuTimesCopy[runningProcess][0];
+        const cpuEndTime = currentTime;
+        // record CPU start and end times for running process
+        cpuStartTimes[runningProcess].push(cpuStartTime);
+        cpuEndTimes[runningProcess].push(cpuEndTime);
         // If the process has no more CPU bursts, it is finished
-        if (cpuTimes[runningProcess].length === 1) {
+        if (cpuTimes[runningProcess].length === 1 || isNaN(cpuTimes[runningProcess][1])) {
           processStates[runningProcess] = { state: 'terminated', time: currentTime };
           finishedCount++;
           completionTimes[runningProcess] = currentTime;
@@ -38,9 +54,10 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
           waitingTimes[runningProcess] = turnaroundTimes[runningProcess] - cpuSums[runningProcess];
         } else {
           // If the process has more CPU bursts, it is blocked
-          let ioTime = cpuTimes[runningProcess].shift();
           blockedQueue.push(runningProcess);
           processStates[runningProcess] = { state: 'blocked', time: currentTime };
+          cpuTimes[runningProcess].shift();
+          cpuTimesCopy[runningProcess].shift();
         }
         runningProcess = null;
       }
@@ -82,12 +99,15 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
 
     // Increment the current time
     currentTime++;
+    console.log('Finished Count:', finishedCount);
   }
   console.log('Response times:', responseTimes);
   console.log('Turnaround times:', turnaroundTimes);
   console.log('Completion times:', completionTimes);
   console.log('Waiting times:', waitingTimes);
   console.log('Total CPU times:', cpuSums);
+  console.log('CPU Start times:', cpuStartTimes);
+  console.log('CPU End times:', cpuEndTimes);
 }
 
 fcfsScheduling(arrivalTimes, cpuTimes, ioTimes);

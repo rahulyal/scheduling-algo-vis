@@ -33,9 +33,13 @@ function addRow(){
 }
 
 function calculateAverage(){
-    getDataArray()
-
-    console.log(arrivalTimes, cpuTimes, ioTimes);
+    getDataArray();
+    //cpuTimes.shift();
+    //ioTimes.shift();
+    const cpu = cpuTimes.map(arr => arr.slice(1));
+    const io = ioTimes.map(arr => arr.slice(1));
+    console.log(arrivalTimes, cpu, io);
+    sjfScheduling(arrivalTimes, cpu, io);
 }
 
 function getDataArray(){//Stores data into arrays
