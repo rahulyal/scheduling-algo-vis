@@ -2,9 +2,9 @@
 // let cpuTimes = [[6,1], [2], [1]];
 // let ioTimes = [[1], [0], [0]];
 
-let arrivalTimes = [0, 2, 6];
-let cpuTimes = [[6,1], [2,NaN], [1,NaN]];
-let ioTimes = [[1,NaN], [NaN,NaN], [NaN,NaN]];
+// let arrivalTimes = [0, 2, 6];
+// let cpuTimes = [[6,1], [2,NaN], [1,NaN]];
+// let ioTimes = [[1,NaN], [NaN,NaN], [NaN,NaN]];
 
 function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     const n = arrivalTimes.length;
@@ -119,6 +119,5 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     console.log('Total CPU times:', cpuSums);
     console.log('CPU Start times:', cpuStartTimes);
     console.log('CPU End times:', cpuEndTimes);
+    return [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]
 }
-
-sjfScheduling(arrivalTimes, cpuTimes, ioTimes);

@@ -39,7 +39,8 @@ function calculateAverage(){
     const cpu = cpuTimes.map(arr => arr.slice(1));
     const io = ioTimes.map(arr => arr.slice(1));
     console.log(arrivalTimes, cpu, io);
-    sjfScheduling(arrivalTimes, cpu, io);
+    var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=sjfScheduling(arrivalTimes, cpu, io)
+    outputTableData(responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums);
 }
 
 function getDataArray(){//Stores data into arrays
@@ -139,3 +140,47 @@ function addMoreTimes(){
 function clearArray(arr){
     arr.splice(0,arr.length)
 }
+
+
+function avgArray(arr){
+    var sum = 0.0
+    arr.forEach(item => {sum += item;});
+    return sum/arr.length
+}
+
+function outputTableData(responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums){
+    ioTimesCopy=[]
+    var ioSums = []
+    for(var i =0;i<numberProcesses;i++){
+      ioTimesCopy.push(ioTimes[i].filter(function(item){return !isNaN(item)}))
+      ioSums[i]=0
+      ioTimesCopy[i].forEach(item => {ioSums[i] += item;});
+    }
+    var processOutputTable =document.getElementById("addOutputRow");
+    processOutputTable.innerHTML=""
+    for(var i =0;i<numberProcesses;i++){
+      var rowContent = "<tr id = \"outputProcess"+String(i+1)+ "\">\n"
+      rowContent+="<td>"+String(i+1)+"</td>"//Process Number
+      rowContent+="<td>"+arrivalTimes[i]+"</td>"//Arrival Number
+      rowContent+="<td>"+cpuSums[i]+"</td>"//CPU Total
+      rowContent+="<td>"+ioSums[i]+"</td>"//IO Total
+      rowContent+="<td>"+completionTimes[i]+"</td>"//Completion Time
+      rowContent+="<td>"+waitingTimes[i]+"</td>"//Waiting Time
+      rowContent+="<td>"+turnaroundTimes[i]+"</td>"//Turnaround Time
+      rowContent+="<td>"+responseTimes[i]+"</td>"//Response Time
+      rowContent+="</tr>\n"
+      processOutputTable.innerHTML+=rowContent
+    }
+    var rowContent = "<tr id = \"averageResults\">\n"
+    rowContent+="<td>Avg</td>"//Process Number
+    rowContent+="<td>"+avgArray(arrivalTimes).toFixed(2)+"</td>"//Arrival Number
+    rowContent+="<td>"+avgArray(cpuSums).toFixed(2)+"</td>"//CPU Total
+    rowContent+="<td>"+avgArray(ioSums).toFixed(2)+"</td>"//IO Total
+    rowContent+="<td>"+avgArray(completionTimes).toFixed(2)+"</td>"//Completion Time
+    rowContent+="<td>"+avgArray(waitingTimes).toFixed(2)+"</td>"//Waiting Time
+    rowContent+="<td>"+avgArray(turnaroundTimes).toFixed(2)+"</td>"//Turnaround Time
+    rowContent+="<td>"+avgArray(responseTimes).toFixed(2)+"</td>"//Response Time
+    rowContent+="</tr>\n"
+    processOutputTable.innerHTML+=rowContent
+  }
+
