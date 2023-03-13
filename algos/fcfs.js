@@ -8,6 +8,7 @@
 
 function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
   const n = arrivalTimes.length;
+  const arrivedProcesses = [];
   const readyQueue = [];
   const blockedQueue = [];
   const processStates = [];
@@ -20,6 +21,7 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
   let waitingTimes = Array(n).fill(0);
   // let cpuSums = cpuTimes.map(process => process.reduce((acc, curr) => acc + curr));
   let cpuSums = cpuTimes.map(process => process.filter(t => !isNaN(t)).reduce((acc, curr) => acc + curr, 0));
+  let ioSums = Array(n).fill(0);
   const cpuStartTimes = Array(n).fill(null).map(_ => []);
   const cpuEndTimes = Array(n).fill(null).map(_ => []);
   let cpuTimesCopy = [];
@@ -30,48 +32,10 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
   while (finishedCount < n) {
     // Check if there are any processes that arrived at the current time
     for (let i = 0; i < n; i++) {
-      if (arrivalTimes[i] === currentTime) {
+      if (arrivalTimes[i] === currentTime && !arrivedProcesses.includes(i)) {
+        arrivedProcesses.push(i);
         readyQueue.push(i);
         processStates[i] = { state: 'ready', time: currentTime };
-      }
-    }
-
-    // Check if the running process has finished its CPU burst
-    if (runningProcess !== null) {
-      cpuTimes[runningProcess][0]--;
-      if (isNaN(cpuTimes[runningProcess][0]) || cpuTimes[runningProcess][0] === 0) {
-        const cpuStartTime = currentTime - cpuTimesCopy[runningProcess][0];
-        const cpuEndTime = currentTime;
-        // record CPU start and end times for running process
-        cpuStartTimes[runningProcess].push(cpuStartTime);
-        cpuEndTimes[runningProcess].push(cpuEndTime);
-        // If the process has no more CPU bursts, it is finished
-        if (cpuTimes[runningProcess].length === 1 || isNaN(cpuTimes[runningProcess][1])) {
-          processStates[runningProcess] = { state: 'terminated', time: currentTime };
-          finishedCount++;
-          completionTimes[runningProcess] = currentTime;
-          turnaroundTimes[runningProcess] = currentTime - arrivalTimes[runningProcess];
-          waitingTimes[runningProcess] = turnaroundTimes[runningProcess] - cpuSums[runningProcess];
-        } else {
-          // If the process has more CPU bursts, it is blocked
-          blockedQueue.push(runningProcess);
-          processStates[runningProcess] = { state: 'blocked', time: currentTime };
-          cpuTimes[runningProcess].shift();
-          cpuTimesCopy[runningProcess].shift();
-        }
-        runningProcess = null;
-      }
-    }
-
-    // Check if a blocked process has finished its IO burst
-    for (let i = 0; i < blockedQueue.length; i++) {
-      const process = blockedQueue[i];
-      ioTimes[process][0]--;
-      if (ioTimes[process][0] === 0) {
-        readyQueue.push(process);
-        blockedQueue.splice(i, 1);
-        processStates[process] = { state: 'ready', time: currentTime };
-        i--;
       }
     }
 
@@ -84,6 +48,49 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
       } else if (processStates[runningProcess].state !== 'running') {
         processStates[runningProcess].state = 'running';
       }
+    }
+
+    // Check if the running process has finished its CPU burst
+    if (runningProcess !== null) {
+      if (isNaN(cpuTimes[runningProcess][0]) || cpuTimes[runningProcess][0] === 0) {
+        const cpuStartTime = currentTime - cpuTimesCopy[runningProcess][0];
+        const cpuEndTime = currentTime;
+        // record CPU start and end times for running process
+        cpuStartTimes[runningProcess].push(cpuStartTime);
+        cpuEndTimes[runningProcess].push(cpuEndTime);
+        // If the process has no more CPU bursts, it is finished
+        if (cpuTimes[runningProcess].length === 1 || isNaN(cpuTimes[runningProcess][1]) || 
+          (cpuTimes[runningProcess].length == 2 && cpuTimes[runningProcess][1] === 0)) {
+          processStates[runningProcess] = { state: 'terminated', time: currentTime };
+          finishedCount++;
+          completionTimes[runningProcess] = currentTime;
+          turnaroundTimes[runningProcess] = currentTime - arrivalTimes[runningProcess];
+          waitingTimes[runningProcess] = turnaroundTimes[runningProcess] - cpuSums[runningProcess] - ioSums[runningProcess];
+        } else {
+          // If the process has more CPU bursts, it is blocked
+          blockedQueue.push(runningProcess);
+          processStates[runningProcess] = { state: 'blocked', time: currentTime };
+          cpuTimes[runningProcess].shift();
+          cpuTimesCopy[runningProcess].shift();
+        }
+        runningProcess = null;
+        continue;
+      }
+      cpuTimes[runningProcess][0]--;
+    }
+
+    // Check if a blocked process has finished its IO burst
+    for (let i = 0; i < blockedQueue.length; i++) {
+      const process = blockedQueue[i];
+      if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+        readyQueue.push(process);
+        blockedQueue.splice(i, 1);
+        processStates[process] = { state: 'ready', time: currentTime };
+        i--;
+        continue;
+      }
+      ioTimes[process][0]--;
+      ioSums[process]++;
     }
 
     // Output the state of each process at the current time
@@ -108,6 +115,7 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
   console.log('Total CPU times:', cpuSums);
   console.log('CPU Start times:', cpuStartTimes);
   console.log('CPU End times:', cpuEndTimes);
+  return [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]
 }
 
 fcfsScheduling(arrivalTimes, cpuTimes, ioTimes);

@@ -39,8 +39,34 @@ function calculateAverage(){
     const cpu = cpuTimes.map(arr => arr.slice(1));
     const io = ioTimes.map(arr => arr.slice(1));
     console.log(arrivalTimes, cpu, io);
-    var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=sjfScheduling(arrivalTimes, cpu, io)
+    getAlgo();
+    if (algorithmOption == 1) {
+        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=fcfsScheduling(arrivalTimes, cpu, io);
+    }
+    else if (algorithmOption == 2) {
+        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=sjfScheduling(arrivalTimes, cpu, io);
+    }
+    else if (algorithmOption == 3) {
+        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=srtfScheduling(arrivalTimes, cpu, io);
+    }
+    
     outputTableData(responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums);
+}
+
+function getAlgo(){
+    var algoChoice = document.getElementById("algo").value;
+    if (algoChoice == "fcfs") {
+        algorithmOption = 1;
+        return;
+    }    
+    if (algoChoice == "sjf") {
+        algorithmOption = 2;
+        return;
+    }
+    if (algoChoice == "srtf") {
+        algorithmOption = 3;
+        return;
+    }
 }
 
 function getDataArray(){//Stores data into arrays
