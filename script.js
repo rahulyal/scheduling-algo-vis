@@ -76,12 +76,12 @@ function getDataArray(){//Stores data into arrays
     cpuTimes=[]
     ioTimes=[]
     for( var i = 1; i <=numberProcesses; i++ ) {
-        arrivalTimes[i-1]= parseFloat(document.getElementById(String(i)+"ARR").value)
+        arrivalTimes[i-1]= parseInt(document.getElementById(String(i)+"ARR").value)
         cpuRowArray=[]
         ioRowArray=[]
         for(var j = 1;j<=numberTimes;j++){
-            cpuRowArray[j]= parseFloat(document.getElementById(String(i)+"CPU"+String(j)).value)
-            ioRowArray[j]= parseFloat(document.getElementById(String(i)+"IO"+String(j)).value)
+            cpuRowArray[j]= parseInt(document.getElementById(String(i)+"CPU"+String(j)).value)
+            ioRowArray[j]= parseInt(document.getElementById(String(i)+"IO"+String(j)).value)
 
         }
         cpuTimes[i-1]=cpuRowArray
