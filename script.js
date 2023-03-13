@@ -3,10 +3,10 @@ var numberTimes = 1
 var algorithmOption = 0
 //0 - All, 1- FIFO, 2-SJF
 
-const arrivalTimes = [];
-const cpuTimes = [];
+let arrivalTimes = [];
+let cpuTimes = [];
 //cpuTimes[0] --> 
-const ioTimes = [];
+let ioTimes = [];
 
 
 function addRow(){
@@ -46,6 +46,9 @@ function calculateAverage(){
 }
 
 function getDataArray(){//Stores data into arrays
+    arrivalTimes=[]
+    cpuTimes=[]
+    ioTimes=[]
     for( var i = 1; i <=numberProcesses; i++ ) {
         arrivalTimes[i-1]= parseFloat(document.getElementById(String(i)+"ARR").value)
         cpuRowArray=[]
