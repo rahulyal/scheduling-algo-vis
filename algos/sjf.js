@@ -2,9 +2,9 @@
 // let cpuTimes = [[6,1], [2], [1]];
 // let ioTimes = [[1], [0], [0]];
 
-let arrivalTimes = [0, 0];
-let cpuTimes = [[3,NaN], [2,6]];
-let ioTimes = [[1,NaN], [2,NaN]];
+// let arrivalTimes = [0, 0];
+// let cpuTimes = [[3,NaN], [2,6]];
+// let ioTimes = [[1,NaN], [2,NaN]];
 
 function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     const n = arrivalTimes.length;
@@ -20,6 +20,7 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     let waitingTimes = Array(n).fill(0);
     // let cpuSums = cpuTimes.map(process => process.reduce((acc, curr) => acc + curr));
     let cpuSums = cpuTimes.map(process => process.filter(t => !isNaN(t)).reduce((acc, curr) => acc + curr, 0));
+    let ioSums = Array(n).fill(0);
     const cpuStartTimes = Array(n).fill(null).map(_ => []);
     const cpuEndTimes = Array(n).fill(null).map(_ => []);
     let cpuTimesCopy = [];
@@ -32,17 +33,29 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     // Check if there are any processes that arrived at the current time
     for (let i = 0; i < n; i++) {
       if (arrivalTimes[i] === currentTime) {
-        readyQueue.push(i);
+        readyQueue.push({ id: i, cpuBurst: cpuTimes[i][0] });
         processStates[i] = { state: 'ready', time: currentTime };
       }
     }
 
     if(readyQueue.length>0){// Sort the ready queue by remaining CPU time
-      sortShortest(readyQueue, cpuEndTimes, cpuTimes)
+      // sortShortest(readyQueue, cpuEndTimes, cpuTimes)
+      readyQueue.sort(function(p1, p2) { return p1.cpuBurst - p2.cpuBurst } );
     }
+
+    // If there is no running process, take the first process in the ready queue
+    if (runningProcess === null && readyQueue.length > 0) {
+      runningProcess = readyQueue.shift().id;
+      if (responseTimes[runningProcess] === null) {
+        processStates[runningProcess] = { state: 'running', time: currentTime };
+        responseTimes[runningProcess] = currentTime - arrivalTimes[runningProcess];
+      } else if (processStates[runningProcess].state !== 'running') {
+        processStates[runningProcess].state = 'running';
+      }
+    }
+    
     // Check if the running process has finished its CPU burst
     if (runningProcess !== null) {
-      cpuTimes[runningProcess][0]--;
       if (isNaN(cpuTimes[runningProcess][0]) || cpuTimes[runningProcess][0] === 0) {
         const cpuStartTime = currentTime - cpuTimesCopy[runningProcess][0];
         const cpuEndTime = currentTime;
@@ -55,7 +68,7 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
           finishedCount++;
           completionTimes[runningProcess] = currentTime;
           turnaroundTimes[runningProcess] = currentTime - arrivalTimes[runningProcess];
-          waitingTimes[runningProcess] = turnaroundTimes[runningProcess] - cpuSums[runningProcess];
+          waitingTimes[runningProcess] = turnaroundTimes[runningProcess] - cpuSums[runningProcess]- ioSums[runningProcess];
         } else {
           // If the process has more CPU bursts, it is blocked
           blockedQueue.push(runningProcess);
@@ -64,30 +77,28 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
           cpuTimesCopy[runningProcess].shift();
         }
         runningProcess = null;
+        continue;
       }
+      cpuTimes[runningProcess][0]--;
     }
 
     // Check if a blocked process has finished its IO burst
     for (let i = 0; i < blockedQueue.length; i++) {
       const process = blockedQueue[i];
-      ioTimes[process][0]--;
-      if (ioTimes[process][0] === 0) {
-        readyQueue.push(process);
+      if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+        ioTimes[process].shift();
+        readyQueue.push({ id: process, cpuBurst: cpuTimes[process][0] });
         blockedQueue.splice(i, 1);
         processStates[process] = { state: 'ready', time: currentTime };
         i--;
+        continue;
       }
+      ioTimes[process][0]--;
+      ioSums[process]++;
     }
 
-    // If there is no running process, take the first process in the ready queue
     if (runningProcess === null && readyQueue.length > 0) {
-      runningProcess = readyQueue.shift();
-      if (responseTimes[runningProcess] === null) {
-        processStates[runningProcess] = { state: 'running', time: currentTime };
-        responseTimes[runningProcess] = currentTime - arrivalTimes[runningProcess];
-      } else if (processStates[runningProcess].state !== 'running') {
-        processStates[runningProcess].state = 'running';
-      }
+      continue;
     }
 
     // Output the state of each process at the current time
