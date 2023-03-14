@@ -77,6 +77,9 @@
   #resultsTable {
     margin: 0px;
   }
+  #priorityTable{
+    margin:0px;
+  }
   
   #resultsTable th, #resultsTable td {
     padding: 10px;
