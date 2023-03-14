@@ -63,8 +63,13 @@ function calculateAverage(){
         alert("Click Refresh to enter time quantum")
         return;
       }
-        quanta = parseInt(document.getElementById("roundRobinQuanta").value)
-        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]=rrScheduling(arrivalTimes, cpu, io, quanta);
+        if(!isNaN(document.getElementById("roundRobinQuanta").value)){
+          quanta = parseInt(document.getElementById("roundRobinQuanta").value)
+          var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]=rrScheduling(arrivalTimes, cpu, io, quanta);
+        }else{
+          alert("Not Valid Input")
+          return;
+        }
     }
     else if (algorithmOption === 7) {
       // const copyCPU = cpuTimes.map((x)=>x.map(y=>y))
