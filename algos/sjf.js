@@ -40,6 +40,19 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     }
     console.log(readyQueue,"AFTERLOOP")
 
+    // Check for processes just unblocked and put them into ready queue
+    for (let i = 0; i < blockedQueue.length; i++) {
+      const process = blockedQueue[i];
+      if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+        ioTimes[process].shift();
+        readyQueue.push({ id: process, cpuBurst: cpuTimes[process][0] });
+        blockedQueue.splice(i, 1);
+        processStates[process] = { state: 'ready', time: currentTime };
+        i--;
+        continue;
+      }
+    }
+
     if(readyQueue.length>0){// Sort the ready queue by remaining CPU time
       //sortShortest(readyQueue, cpuEndTimes, cpuTimes)
       readyQueue.sort(function(p1, p2) { return p1.cpuBurst - p2.cpuBurst } );
@@ -87,20 +100,16 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     // Check if a blocked process has finished its IO burst
     for (let i = 0; i < blockedQueue.length; i++) {
       const process = blockedQueue[i];
-      if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
-        ioTimes[process].shift();
-        readyQueue.push({ id: process, cpuBurst: cpuTimes[process][0] });
-        blockedQueue.splice(i, 1);
-        processStates[process] = { state: 'ready', time: currentTime };
-        i--;
-        continue;
-      }
+      // if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+      //   ioTimes[process].shift();
+      //   readyQueue.push({ id: process, cpuBurst: cpuTimes[process][0] });
+      //   blockedQueue.splice(i, 1);
+      //   processStates[process] = { state: 'ready', time: currentTime };
+      //   i--;
+      //   continue;
+      // }
       ioTimes[process][0]--;
       ioSums[process]++;
-    }
-
-    if (runningProcess === null && readyQueue.length > 0) {
-      continue;
     }
 
     // Output the state of each process at the current time

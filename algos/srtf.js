@@ -38,6 +38,24 @@ function srtfScheduling(arrivalTimes, cpuTimes, ioTimes) {
             }
         }
 
+        // Check for processes just unblocked and put them into ready queue
+        for (let i = 0; i < blockedQueue.length; i++) {
+            const process = blockedQueue[i];
+            if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+                ioTimes[process].shift();
+                ioTimesCopy[process].shift();
+                if (ioStartTimes[process].length > ioEndTimes[process].length) {
+                    ioEndTimes[process].push(currentTime);
+                }
+                readyQueue.push({ id: process, cpuBurst: cpuTimes[process][0] });
+                readyQueue.sort(function(p1, p2) { return p1.cpuBurst - p2.cpuBurst });
+                blockedQueue.splice(i, 1);
+                processStates[process] = { state: 'ready', time: currentTime };
+                i--;
+                continue;
+            }
+        }
+
         // If there is no running process, take the first process in the ready queue
         if (runningProcess === null && readyQueue.length > 0) {
             runningProcess = readyQueue.shift().id;
@@ -98,29 +116,24 @@ function srtfScheduling(arrivalTimes, cpuTimes, ioTimes) {
         // Check if a blocked process has finished its IO burst
         for (let i = 0; i < blockedQueue.length; i++) {
             const process = blockedQueue[i];
-            if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
-                ioTimes[process].shift();
-                ioTimesCopy[process].shift();
-                if (ioStartTimes[process].length > ioEndTimes[process].length) {
-                    ioEndTimes[process].push(currentTime);
-                }
-                readyQueue.push({ id: process, cpuBurst: cpuTimes[process][0] });
-                readyQueue.sort(function(p1, p2) { return p1.cpuBurst - p2.cpuBurst });
-                blockedQueue.splice(i, 1);
-                processStates[process] = { state: 'ready', time: currentTime };
-                i--;
-                continue;
-            }
+            // if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+            //     ioTimes[process].shift();
+            //     ioTimesCopy[process].shift();
+            //     if (ioStartTimes[process].length > ioEndTimes[process].length) {
+            //         ioEndTimes[process].push(currentTime);
+            //     }
+            //     readyQueue.push({ id: process, cpuBurst: cpuTimes[process][0] });
+            //     readyQueue.sort(function(p1, p2) { return p1.cpuBurst - p2.cpuBurst });
+            //     blockedQueue.splice(i, 1);
+            //     processStates[process] = { state: 'ready', time: currentTime };
+            //     i--;
+            //     continue;
+            // }
             if (ioTimes[process][0] == ioTimesCopy[process][0]) {
                 ioStartTimes[process].push(currentTime);
             }
             ioTimes[process][0]--;
             ioSums[process]++;
-        }
-
-        // A process may have been unblocked and be placed in the ready queue
-        if (runningProcess === null && readyQueue.length > 0) {
-            continue;
         }
         
         // Output the state of each process at the current time

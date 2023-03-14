@@ -2,9 +2,9 @@
 // let cpuTimes = [[6, 1], [2], [1]];
 // let ioTimes = [[1], [0], [0]];
 
-// let arrivalTimes = [0, 2, 6];
-// let cpuTimes = [[6,1], [2,NaN], [1,NaN]];
-// let ioTimes = [[1,NaN], [NaN,NaN], [NaN,NaN]];
+let arrivalTimes = [0, 2, 2];
+let cpuTimes = [[3,1], [3,NaN], [3,NaN]];
+let ioTimes = [[1,NaN], [NaN,NaN], [NaN,NaN]];
 
 function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
   const n = arrivalTimes.length;
@@ -36,6 +36,18 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
         arrivedProcesses.push(i);
         readyQueue.push(i);
         processStates[i] = { state: 'ready', time: currentTime };
+      }
+    }
+
+    // Check for processes just unblocked and put them into ready queue
+    for (let i = 0; i < blockedQueue.length; i++) {
+      const process = blockedQueue[i];
+      if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+        readyQueue.push(process);
+        blockedQueue.splice(i, 1);
+        processStates[process] = { state: 'ready', time: currentTime };
+        i--;
+        continue;
       }
     }
 
@@ -82,19 +94,15 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
     // Check if a blocked process has finished its IO burst
     for (let i = 0; i < blockedQueue.length; i++) {
       const process = blockedQueue[i];
-      if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
-        readyQueue.push(process);
-        blockedQueue.splice(i, 1);
-        processStates[process] = { state: 'ready', time: currentTime };
-        i--;
-        continue;
-      }
+      // if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+      //   readyQueue.push(process);
+      //   blockedQueue.splice(i, 1);
+      //   processStates[process] = { state: 'ready', time: currentTime };
+      //   i--;
+      //   continue;
+      // }
       ioTimes[process][0]--;
       ioSums[process]++;
-    }
-
-    if (runningProcess === null && readyQueue.length > 0) {
-      continue;
     }
 
     // Output the state of each process at the current time
