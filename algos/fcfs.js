@@ -39,6 +39,18 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
       }
     }
 
+    // Check for processes just unblocked and put them into ready queue
+    for (let i = 0; i < blockedQueue.length; i++) {
+      const process = blockedQueue[i];
+      if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+        readyQueue.push(process);
+        blockedQueue.splice(i, 1);
+        processStates[process] = { state: 'ready', time: currentTime };
+        i--;
+        continue;
+      }
+    }
+
     // If there is no running process, take the first process in the ready queue
     if (runningProcess === null && readyQueue.length > 0) {
       runningProcess = readyQueue.shift();
@@ -82,19 +94,15 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
     // Check if a blocked process has finished its IO burst
     for (let i = 0; i < blockedQueue.length; i++) {
       const process = blockedQueue[i];
-      if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
-        readyQueue.push(process);
-        blockedQueue.splice(i, 1);
-        processStates[process] = { state: 'ready', time: currentTime };
-        i--;
-        continue;
-      }
+      // if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+      //   readyQueue.push(process);
+      //   blockedQueue.splice(i, 1);
+      //   processStates[process] = { state: 'ready', time: currentTime };
+      //   i--;
+      //   continue;
+      // }
       ioTimes[process][0]--;
       ioSums[process]++;
-    }
-
-    if (runningProcess === null && readyQueue.length > 0) {
-      continue;
     }
 
     // Output the state of each process at the current time
