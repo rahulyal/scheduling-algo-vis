@@ -141,7 +141,6 @@ function deleteTimes(){
 
 
 function addMoreTimes(){
-
     if(numberTimes==5){
         alert("Maximum CPU/IO times is 5!")
     }else{
@@ -162,10 +161,8 @@ function addMoreTimes(){
             rowContent+="<td" +rowClass +"><input type=\"text\""+ rowIdCPU+"/></td>\n"
             rowContent+="<td" +rowClass +"><input type=\"text\""+ rowIdIO+"/></td>\n</tr>\n"
             tableRow.innerHTML+=rowContent
-
         }
     }
-
 }
 
 function clearArray(arr){
