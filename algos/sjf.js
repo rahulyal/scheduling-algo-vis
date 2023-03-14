@@ -2,9 +2,9 @@
 // let cpuTimes = [[6,1], [2], [1]];
 // let ioTimes = [[1], [0], [0]];
 
-// let arrivalTimes = [0, 0];
-// let cpuTimes = [[3,NaN], [2,6]];
-// let ioTimes = [[1,NaN], [2,NaN]];
+let arrivalTimes = [0, 0];
+let cpuTimes = [[3,NaN], [2,6]];
+let ioTimes = [[1,NaN], [2,NaN]];
 
 function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     const n = arrivalTimes.length;
@@ -39,7 +39,7 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     }
 
     if(readyQueue.length>0){// Sort the ready queue by remaining CPU time
-      // sortShortest(readyQueue, cpuEndTimes, cpuTimes)
+      //sortShortest(readyQueue, cpuEndTimes, cpuTimes)
       readyQueue.sort(function(p1, p2) { return p1.cpuBurst - p2.cpuBurst } );
     }
 
@@ -128,17 +128,23 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
 sjfScheduling(arrivalTimes, cpuTimes, ioTimes)
 
 function sortShortest(readyQu, cpuEndTimes, cpuTimes){
-  var shortestProcess = readyQu[0];
+  var shortestProcess = readyQu[0].id;
   var processIndex =0
-  var shortestJob = cpuTimes[shortestProcess][cpuEndTimes[shortestProcess].length]
+  console.log(readyQu, "hI")
+  
+  var shortestJob = cpuTimes[1][cpuEndTimes[shortestProcess].length]
+  console.log(cpuEndTimes, "JI")
   for(var i = 0;i< readyQu.length;i++){
-    process = readyQu[i]
+    process = readyQu[i].id
     if(cpuTimes[process][cpuEndTimes[process].length]<shortestJob){
       shortestJob = cpuTimes[process][cpuEndTimes[process].length];
       processIndex = i;
       shortestProcess = process
     }
   }
+  console.log(shortestJob, "JI")
   readyQu.splice(processIndex, 1);
-  readyQu.unshift(shortestProcess)
+  readyQu.unshift({ id: shortestProcess, cpuBurst: shortestJob })
+  console.log(readyQu, "hI")
 }
+console.log(cpuTimes)
