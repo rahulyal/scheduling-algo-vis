@@ -44,7 +44,7 @@ function rrScheduling(arrivalTimes, cpuTimes, ioTimes, quantum) {
         }
       }
 
-      // Check for processes just unblocked and put them into ready queue before choosing the next process to run
+      // Check for processes just unblocked and put them into ready queue
       for (let i = 0; i < blockedQueue.length; i++) {
         const process = blockedQueue[i];
         if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
