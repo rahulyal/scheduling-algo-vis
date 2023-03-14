@@ -87,6 +87,22 @@ function rrScheduling(arrivalTimes, cpuTimes, ioTimes) {
             runningProcess = null;
             continue;
         } else if (currQuant == 0) {
+            // Check for processes just unblocked and put them into ready queue before choosing the next process to run
+            for (let i = 0; i < blockedQueue.length; i++) {
+              const process = blockedQueue[i];
+              if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+                ioTimes[process].shift();
+                ioTimesCopy[process].shift();
+                if (ioStartTimes[process].length > ioEndTimes[process].length) {
+                    ioEndTimes[process].push(currentTime);
+                }
+                readyQueue.push(process);
+                blockedQueue.splice(i, 1);
+                processStates[process] = { state: 'ready', time: currentTime };
+                i--;
+                continue;
+              }
+            }
             // If time quantum expires, preemptively remove the current process from the CPU
             cpuEndTimes[runningProcess].push(currentTime);
             readyQueue.push(runningProcess);
@@ -147,5 +163,5 @@ function rrScheduling(arrivalTimes, cpuTimes, ioTimes) {
     console.log('Total CPU times:', cpuSums);
     console.log('CPU Start times:', cpuStartTimes);
     console.log('CPU End times:', cpuEndTimes);
-    return [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]
+    return [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]
   }
