@@ -1,4 +1,4 @@
-var processPriorities = [];
+var processPriorities = [10, 9, 8, 7];
 
 function ppScheduling(arrivalTimes, cpuTimes, ioTimes) {
     const n = arrivalTimes.length;
@@ -40,6 +40,24 @@ function ppScheduling(arrivalTimes, cpuTimes, ioTimes) {
             }
         }
 
+        // Check for processes just unblocked and put them into ready queue
+        for (let i = 0; i < blockedQueue.length; i++) {
+            const process = blockedQueue[i];
+            if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+                ioTimes[process].shift();
+                ioTimesCopy[process].shift();
+                if (ioStartTimes[process].length > ioEndTimes[process].length) {
+                    ioEndTimes[process].push(currentTime);
+                }
+                readyQueue.push({ id: process, priority: processPriorities[process] });
+                readyQueue.sort(function(p1, p2) { return p2.priority - p1.priority });
+                blockedQueue.splice(i, 1);
+                processStates[process] = { state: 'ready', time: currentTime };
+                i--;
+                continue;
+            }
+        }
+
         // If there is no running process, take the first process in the ready queue
         if (runningProcess === null && readyQueue.length > 0) {
             runningProcess = readyQueue.shift().id;
@@ -51,7 +69,7 @@ function ppScheduling(arrivalTimes, cpuTimes, ioTimes) {
                 cpuStartTimes[runningProcess].push(currentTime);
                 processStates[runningProcess].state = 'running';
             }
-        } else if (runningProcess !== null && readyQueue.length > 0) {
+        } else if (runningProcess !== null && cpuTimes[runningProcess][0] > 0 && readyQueue.length > 0) {
             // Check if there is a process in the ready queue with a higher priority (preemption)
             if (readyQueue[0].priority > processPriorities[runningProcess]) {
                 cpuEndTimes[runningProcess].push(currentTime);
@@ -101,29 +119,24 @@ function ppScheduling(arrivalTimes, cpuTimes, ioTimes) {
         // Check if a blocked process has finished its IO burst
         for (let i = 0; i < blockedQueue.length; i++) {
             const process = blockedQueue[i];
-            if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
-                ioTimes[process].shift();
-                ioTimesCopy[process].shift();
-                if (ioStartTimes[process].length > ioEndTimes[process].length) {
-                    ioEndTimes[process].push(currentTime);
-                }
-                readyQueue.push({ id: process, priority: processPriorities[process] });
-                readyQueue.sort(function(p1, p2) { return p2.priority - p1.priority });
-                blockedQueue.splice(i, 1);
-                processStates[process] = { state: 'ready', time: currentTime };
-                i--;
-                continue;
-            }
+            // if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+            //     ioTimes[process].shift();
+            //     ioTimesCopy[process].shift();
+            //     if (ioStartTimes[process].length > ioEndTimes[process].length) {
+            //         ioEndTimes[process].push(currentTime);
+            //     }
+            //     readyQueue.push({ id: process, priority: processPriorities[process] });
+            //     readyQueue.sort(function(p1, p2) { return p2.priority - p1.priority });
+            //     blockedQueue.splice(i, 1);
+            //     processStates[process] = { state: 'ready', time: currentTime };
+            //     i--;
+            //     continue;
+            // }
             if (ioTimes[process][0] == ioTimesCopy[process][0]) {
                 ioStartTimes[process].push(currentTime);
             }
             ioTimes[process][0]--;
             ioSums[process]++;
-        }
-
-        // A process may have been unblocked and be placed in the ready queue
-        if (runningProcess === null && readyQueue.length > 0) {
-            continue;
         }
 
         // Output the state of each process at the current time
