@@ -52,6 +52,12 @@ function calculateAverage(){
     else if (algorithmOption === 3) {
         var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]=srtfScheduling(arrivalTimes, cpu, io);
     }
+    else if (algorithmOption === 4) {
+      // nonpreemptive priority
+    }
+    else if (algorithmOption === 5) {
+        
+    }
     
     outputTableData(responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums);
     if (!preemptive) {
@@ -62,17 +68,32 @@ function calculateAverage(){
 
 function getAlgo(){
     var algoChoice = document.getElementById("algo").value;
-    if (algoChoice == "fcfs") {
-        algorithmOption = 1;
-        return;
+    if (algoChoice === "fcfs") {
+      algorithmOption = 1;
+      return;
     }    
-    if (algoChoice == "sjf") {
-        algorithmOption = 2;
-        return;
+    if (algoChoice === "sjf") {
+      algorithmOption = 2;
+      return;
     }
-    if (algoChoice == "srtf") {
-        algorithmOption = 3;
-        return;
+    if (algoChoice === "srtf") {
+      algorithmOption = 3;
+      return;
+    }
+    if (algoChoice === "pnp") {
+      algorithmOption = 4;
+      return;
+    }
+    if (algoChoice === "pp") {
+      algorithmOption = 5;
+      return;
+    }
+    if (algoChoice === "rr") {
+      algorithmOption = 6;
+      return;
+    }
+    if (algoChoice === "lot") {
+      algorithmOption = 7;
     }
 }
 
