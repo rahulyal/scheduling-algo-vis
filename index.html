@@ -13,9 +13,28 @@
     <script src="algos/guaranted.js"></script>
 </head>
 <body>
+  <script>
+    function Div() {
+       var Priority = document.getElementById("algo");
+       var dvPriority = document.getElementById("priorityTable");
+       if (Priority.value == "pnp"){
+         priorityTable.style.display = "block";
+       }
+       else if (Priority.value == "pp"){
+         priorityTable.style.display = "block";
+       }
+       else if(Priority.value == "rr"){
+        refreshInput()
+
+       }
+       else{
+         priorityTable.style.display = "none";
+       }
+    }
+</script>
   <form id="algorithms-form">
     <label for="algo"><h2>Algorithms : </h2></label>
-    <select name="algo" id="algo">
+    <select name="algo" id="algo", onchange="Div()">
         <option value="fcfs">First Come First Serve (FCFS)</option>
         <option value="sjf">Shortest Job First (SJF)</option>
         <option value="srtf">Shortest Remaining Job First (SRTF)</option>
@@ -30,14 +49,27 @@
   <div class="chan", id ="UI">
     <button type="button" onclick="addMoreTimes()">Add Times</button>
     <button type="button" onclick="deleteTimes()">Delete Times</button>
-    <button type="button" onclick="addRow()">Add Process</button>
-    <button type="button" onclick="deleteRow()">Remove Process</button>
-    <button type="button" onclick="refreshInput()">Refresh</button>
+    <button type="button" onclick="addColumn();addRow()">Add Process</button>
+    <button type="button" onclick="deleteColumn();deleteRow()">Remove Process</button>
   </div>
 
 <!-- Processe Table -->
+<div id="priorityTable" style="display: none;">
+  <h2>Priority Table</h2>
+    <table id = "priorityEntry">
+      <tr id = "tableHeader" align= center>
+        <th>Process No.</th>
+        <th id="P1">Process 1</th>
+        <th id="P2">Process 2</th>
+      </tr>
+      <tr id = "priorityNo.">
+        <th>Priority No.</th>
+        <td><input type="text" id="PRN1"/></td>
+        <td><input type="text" id="PRN2"/></td>
+      </tr>
+    </table>
+</div>
 <h2>Processes</h2>
-
 <table id = "processEntryTable">
   <tr id = "tableHeadersInput">
     <th>Process Number</th>
@@ -88,7 +120,6 @@
     </table>
   </div>
   <br>
-  <button type="button" onclick="calculateAverage()">Random Button</button>
     <h2 underline = > Gantt Chart</h2>
     <div class = "scrollGantt" id = "ganttChartInsert">
     </div>

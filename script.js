@@ -1,4 +1,5 @@
 var numberProcesses = 2
+var numberOfProcesses = 2
 var numberTimes = 1
 var algorithmOption = 0
 //0 - All, 1- FIFO, 2-SJF
@@ -7,7 +8,7 @@ let arrivalTimes = [];
 let cpuTimes = [];
 //cpuTimes[0] --> 
 let ioTimes = [];
-
+let priorityData = [];
 
 function addRow(){
     getDataArray()
@@ -414,4 +415,48 @@ function findInterval(deltaTime){//Find nice intervals that give less space
     i+=1.000;
   }
   return Math.floor(interval);
+}
+
+function getPriorityData(){
+  priorityData = [];
+  for(var i=1;i<=numberOfProcesses;i++){
+      priorityData[i-1] = parseInt(document.getElementById("PRN"+String(i)).value)
+  }
+  console.log(priorityData, "Saved")
+}
+
+function setPriorityData(){
+  for(var i=1;i<=numberOfProcesses;i++){
+      if(isNaN(priorityData[i-1])==false){
+          document.getElementById("PRN"+String(i)).defaultValue = priorityData[i-1]
+      }
+  }
+}
+
+function addColumn(){
+  if(numberOfProcesses==10){
+  }
+  else{
+      getPriorityData();
+      setPriorityData();
+      numberOfProcesses+=1
+      var tableHeaders = document.getElementById("tableHeader");
+      var rowContent = "<th id =\"headerPriority" +String(numberOfProcesses)+"\">Process "+String(numberOfProcesses)+"</th>";
+      tableHeaders.innerHTML+=rowContent
+      var tableRow = document.getElementById("priorityNo.");
+      rowContent = "<td id = \"removePri"+String(numberOfProcesses)+"\"><input type=\"text\" id=\"PRN"+String(numberOfProcesses)+"\"/></td>"
+      tableRow.innerHTML+=rowContent
+  }
+}
+
+function deleteColumn(){
+  if(numberOfProcesses>2){
+      const processRemove = document.getElementById("headerPriority"+String(numberOfProcesses))
+      const inputRemove = document.getElementById("removePri"+String(numberOfProcesses))
+      processRemove.remove()
+      inputRemove.remove()
+      numberOfProcesses-=1
+  }
+  else{
+  }
 }
