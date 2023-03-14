@@ -35,8 +35,7 @@ function addRow(){
 
 function calculateAverage(){
     getDataArray();
-    //cpuTimes.shift();
-    //ioTimes.shift();
+    getPriorityData()
     const cpu = cpuTimes.map(arr => arr.slice(1));
     const io = ioTimes.map(arr => arr.slice(1));
     console.log(arrivalTimes, cpu, io);
@@ -54,6 +53,8 @@ function calculateAverage(){
         var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]=srtfScheduling(arrivalTimes, cpu, io);
     }
     else if (algorithmOption === 4) {
+      var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=priorityScheduling(arrivalTimes, cpu, io,priorityData);
+      preemptive = false;
       // nonpreemptive priority
     }
     else if (algorithmOption === 5) {
@@ -219,6 +220,11 @@ function refreshInput(){
       elementUI=document.getElementById("UI")
       elementUI.innerHTML+="<input type=\"text\" id=\"roundRobinQuanta\" />"
       document.getElementById("roundRobinQuanta").defaultValue="Enter Time Quantum"
+    }
+  }else{
+    if(document.getElementById("roundRobinQuanta")){//Remove Input if it exists
+      const inputRemove = document.getElementById("roundRobinQuanta")
+      inputRemove.remove()
     }
   }
 

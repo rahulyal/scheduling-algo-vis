@@ -2,12 +2,13 @@
 // let cpuTimes = [[6, 1], [2], [1]];
 // let ioTimes = [[1], [0], [0]];
 
-let arrivalTimes = [0, 2, 2];
-let cpuTimes = [[3,1], [3,NaN], [3,NaN]];
-let ioTimes = [[1,NaN], [NaN,NaN], [NaN,NaN]];
-let priority = [3,2,1];
+// let arrivalTimes = [0, 2, 2];
+// let cpuTimes = [[3,1], [3,NaN], [3,NaN]];
+// let ioTimes = [[1,NaN], [NaN,NaN], [NaN,NaN]];
+// let priority = [3,2,1];
 
 function priorityScheduling(arrivalTimes, cpuTimes, ioTimes, priority) {
+    console.log(priority,"PRIORITY")
     const n = arrivalTimes.length;
     const arrivedProcesses = [];
     const readyQueue = [];
@@ -134,4 +135,4 @@ function priorityScheduling(arrivalTimes, cpuTimes, ioTimes, priority) {
     return [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]
   }
   
-priorityScheduling(arrivalTimes, cpuTimes, ioTimes, priority);
+// priorityScheduling(arrivalTimes, cpuTimes, ioTimes, priority);

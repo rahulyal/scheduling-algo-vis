@@ -9,6 +9,7 @@
     <script src="algos/sjf.js"></script>
     <script src="algos/srtf.js"></script>
     <script src="algos/pp.js"></script>
+    <script src="algos/priority.js"></script>
     <script src="algos/rr.js"></script>
     <script src="algos/guaranted.js"></script>
 </head>
@@ -17,6 +18,7 @@
     function Div() {
        var Priority = document.getElementById("algo");
        var dvPriority = document.getElementById("priorityTable");
+       refreshInput()
        if (Priority.value == "pnp"){
          priorityTable.style.display = "block";
        }
@@ -24,9 +26,7 @@
          priorityTable.style.display = "block";
        }
        else if(Priority.value == "rr"){
-        refreshInput()
         priorityTable.style.display = "none";
-
        }
        else{
          priorityTable.style.display = "none";
