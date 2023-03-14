@@ -93,6 +93,10 @@ function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
       ioSums[process]++;
     }
 
+    if (runningProcess === null && readyQueue.length > 0) {
+      continue;
+    }
+
     // Output the state of each process at the current time
     console.log(`Time: ${currentTime}`);
     for (let i = 0; i < n; i++) {
