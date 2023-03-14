@@ -2,7 +2,7 @@ var numberProcesses = 2
 var numberTimes = 1
 var algorithmOption = 0
 //0 - All, 1- FIFO, 2-SJF
-
+var roundRobinQuanta = 0
 let arrivalTimes = [];
 let cpuTimes = [];
 //cpuTimes[0] --> 
@@ -59,9 +59,21 @@ function calculateAverage(){
         var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]=ppScheduling(arrivalTimes, cpu, io);
     }
     else if (algorithmOption === 6) {
-        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]=rrScheduling(arrivalTimes, cpu, io);
+      if(!document.getElementById("roundRobinQuanta")){//No time quantum
+        alert("Click Refresh to enter time quantum")
+        return;
+      }
+        quanta = parseInt(document.getElementById("roundRobinQuanta").value)
+        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]=rrScheduling(arrivalTimes, cpu, io, quanta);
     }
-    
+    else if (algorithmOption === 7) {
+      // const copyCPU = cpuTimes.map((x)=>x.map(y=>y))
+      // console.log(copyCPU, "COPY CPU")
+      var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=guaranScheduling(arrivalTimes, cpu, io);
+      preemptive = false;
+    }
+    console.log(cpuSums,"SUMS")
+    console.log(cpuStartTimes,cpuEndTimes,"CPU")
     outputTableData(responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums);
     if (!preemptive) {
       var [ioStartTimes,ioEndTimes]=generateIO(cpuStartTimes,cpuEndTimes)
@@ -95,7 +107,7 @@ function getAlgo(){
       algorithmOption = 6;
       return;
     }
-    if (algoChoice === "lot") {
+    if (algoChoice === "guaran") {
       algorithmOption = 7;
     }
 }
@@ -192,6 +204,18 @@ function addMoreTimes(){
             tableRow.innerHTML+=rowContent
         }
     }
+}
+
+function refreshInput(){
+  getAlgo()
+  if(algorithmOption==6){//Round Robin: Add Input Fields
+    if(!document.getElementById("roundRobinQuanta")){//Create Input Time if not there already
+      elementUI=document.getElementById("UI")
+      elementUI.innerHTML+="<input type=\"text\" id=\"roundRobinQuanta\" />"
+      document.getElementById("roundRobinQuanta").defaultValue="Enter Time Quantum"
+    }
+  }
+
 }
 
 function clearArray(arr){

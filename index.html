@@ -10,6 +10,7 @@
     <script src="algos/srtf.js"></script>
     <script src="algos/pp.js"></script>
     <script src="algos/rr.js"></script>
+    <script src="algos/guaranted.js"></script>
 </head>
 <body>
   <form id="algorithms-form">
@@ -21,18 +22,17 @@
         <option value="pnp">Priority (Non Preemptive)</option>
         <option value="pp">Priority (Preemptive)</option>
         <option value="rr">Round Robin</option>
-        <option value="lot">Lottery</option>
+        <option value="guaran">Guaranteed </option>
     </select>
   </form>
-  <div id="chan">
-    <p id="cn"> Click on the button to add CPU and IO time</p>
+
+  <br>
+  <div class="chan", id ="UI">
     <button type="button" onclick="addMoreTimes()">Add Times</button>
     <button type="button" onclick="deleteTimes()">Delete Times</button>
-  </div>
-  <div>
-    <p id="cn"> Click on the button to add Processes</p>
     <button type="button" onclick="addRow()">Add Process</button>
     <button type="button" onclick="deleteRow()">Remove Process</button>
+    <button type="button" onclick="refreshInput()">Refresh</button>
   </div>
 
 <!-- Processe Table -->
@@ -65,7 +65,6 @@
 <br>
 </div>
 <button type="button" onclick="calculateAverage()">Calculate</button>
-<button type="button" onclick="rand()">Verify Process</button>
 </div>
 <br>
 <h2>Results</h2>

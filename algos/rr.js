@@ -1,9 +1,9 @@
-var quantum = 3;
-let arrivalTimes = [0, 3];
-let cpuTimes = [[10,NaN], [2,6]];
-let ioTimes = [[1,NaN], [2,NaN]];
 
-function rrScheduling(arrivalTimes, cpuTimes, ioTimes) {
+// let arrivalTimes = [0, 3];
+// let cpuTimes = [[10,NaN], [2,6]];
+// let ioTimes = [[1,NaN], [2,NaN]];
+
+function rrScheduling(arrivalTimes, cpuTimes, ioTimes, quantum) {
     const n = arrivalTimes.length;
     const arrivedProcesses = [];
     const readyQueue = [];
@@ -164,5 +164,5 @@ function rrScheduling(arrivalTimes, cpuTimes, ioTimes) {
     console.log('CPU End times:', cpuEndTimes);
     return [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]
   }
-  rrScheduling(arrivalTimes, cpuTimes.map((x)=>x.map(y=>y)),ioTimes.map((x)=>x.map(y=>y)))
-  console.log(arrivalTimes, cpuTimes,ioTimes)
+  // rrScheduling(arrivalTimes, cpuTimes.map((x)=>x.map(y=>y)),ioTimes.map((x)=>x.map(y=>y)))
+  // console.log(arrivalTimes, cpuTimes,ioTimes)

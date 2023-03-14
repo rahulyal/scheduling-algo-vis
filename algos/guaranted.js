@@ -2,12 +2,12 @@
 // let cpuTimes = [[6,1], [2], [1]];
 // let ioTimes = [[1], [0], [0]];
 
-let arrivalTimes = [0, 0];
-let cpuTimes = [[3,2], [2,6]];
-let ioTimes = [[3,NaN], [1,NaN]];
+// let arrivalTimes = [0, 0];
+// let cpuTimes = [[3,2], [2,6]];
+// let ioTimes = [[3,NaN], [1,NaN]];
 
 function guaranScheduling(arrivalTimes, cpuTimes, ioTimes) {
-    let copyCPU = cpuTimes.map((x)=>x.map(y=>y))
+    const copyCPU= cpuTimes.map((x)=>x.map(y=>y))
     const n = arrivalTimes.length;
     const readyQueue = [];
     const blockedQueue = [];
@@ -145,11 +145,11 @@ function sortFairness(readyQu, cpuEndTimes,cpuTimesCopy){
         }
     }
     var readyIndex = cpuSum.indexOf(Math.min(...cpuSum))//Find the index in ready queue whose consumed cpu times is smallest
-    console.log(cpuEndTimes,cpuSum, Math.min(...cpuSum))
+    console.log(cpuEndTimes,cpuSum, cpuTimesCopy[0][0], Math.min(...cpuSum))
     var fairestProcess = readyQu[readyIndex].id
     var fairCpuBurst =readyQu[readyIndex].cpuBurst
     readyQu.splice(readyIndex, 1);
     readyQu.unshift({ id: fairestProcess, cpuBurst: fairCpuBurst })
     console.log(readyQu, "NEW")
 }
-guaranScheduling(arrivalTimes, cpuTimes.map((x)=>x.map(y=>y)),ioTimes.map((x)=>x.map(y=>y)))
+//guaranScheduling(arrivalTimes, cpuTimes.map((x)=>x.map(y=>y)),ioTimes.map((x)=>x.map(y=>y)))

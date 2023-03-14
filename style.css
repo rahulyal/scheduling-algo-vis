@@ -19,7 +19,7 @@
   
   /* Set form styles */
   form {
-    margin: 10px;
+    margin: 0px;
   }
   
   label {
@@ -29,7 +29,7 @@
   select {
     font-size: 1.2em;
     padding: 5px;
-    margin: 10px;
+    margin: 0px;
   }
   
   /* Set table styles */
@@ -57,7 +57,7 @@
     padding: 10px 20px;
     border: none;
     cursor: pointer;
-    margin: 5px;
+    margin: 10px;
     border-radius: 5px;
   }
   
@@ -89,6 +89,9 @@
   }
   .container{
     margin:0px;
+  }
+  .chan{
+    margin:0px
   }
   
   .gann {

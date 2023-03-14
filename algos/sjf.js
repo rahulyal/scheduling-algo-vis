@@ -2,9 +2,9 @@
 // let cpuTimes = [[6,1], [2], [1]];
 // let ioTimes = [[1], [0], [0]];
 
-let arrivalTimes = [0, 0,5];
-let cpuTimes = [[3,2], [2,6],[1]];
-let ioTimes = [[3,NaN], [1,NaN],[1]];
+// let arrivalTimes = [0, 0,5];
+// let cpuTimes = [[3,2], [2,6],[1]];
+// let ioTimes = [[3,NaN], [1,NaN],[1]];
 
 function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     const n = arrivalTimes.length;
