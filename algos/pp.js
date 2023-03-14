@@ -1,4 +1,6 @@
-function srtfScheduling(arrivalTimes, cpuTimes, ioTimes) {
+var processPriorities = [];
+
+function ppScheduling(arrivalTimes, cpuTimes, ioTimes) {
     const n = arrivalTimes.length;
     const arrivedProcesses = [];
     const readyQueue = [];
@@ -32,8 +34,8 @@ function srtfScheduling(arrivalTimes, cpuTimes, ioTimes) {
         for (let i = 0; i < n; i++) {
             if (arrivalTimes[i] === currentTime && !arrivedProcesses.includes(i)) {
                 arrivedProcesses.push(i);
-                readyQueue.push({ id: i, cpuBurst: cpuTimes[i][0] });
-                readyQueue.sort(function(p1, p2) { return p1.cpuBurst - p2.cpuBurst } );
+                readyQueue.push({ id: i, priority: processPriorities[i] });
+                readyQueue.sort(function(p1, p2) { return p2.priority - p1.priority } );
                 processStates[i] = { state: 'ready', time: currentTime };
             }
         }
@@ -50,17 +52,17 @@ function srtfScheduling(arrivalTimes, cpuTimes, ioTimes) {
                 processStates[runningProcess].state = 'running';
             }
         } else if (runningProcess !== null && readyQueue.length > 0) {
-            // Check if there is a process in the ready queue with a shorter CPU burst time (preemption)
-            if (readyQueue[0].cpuBurst < cpuTimes[runningProcess][0]) {
+            // Check if there is a process in the ready queue with a higher priority (preemption)
+            if (readyQueue[0].priority > processPriorities[runningProcess]) {
                 cpuEndTimes[runningProcess].push(currentTime);
-                readyQueue.push({ id: runningProcess, cpuBurst: cpuTimes[runningProcess][0] });
+                readyQueue.push({ id: runningProcess, priority: processPriorities[runningProcess] });
                 processStates[runningProcess] = { state: 'ready', time: currentTime };
-                readyQueue.sort(function(p1, p2) { return p1.cpuBurst - p2.cpuBurst });
+                readyQueue.sort(function(p1, p2) { return p2.priority - p1.priority });
                 runningProcess = null;
                 continue;
             }
         }
-        
+
         // Check if the running process has finished its CPU burst 
         if (runningProcess !== null) {
             if (isNaN(cpuTimes[runningProcess][0]) || cpuTimes[runningProcess][0] === 0) {
@@ -93,6 +95,7 @@ function srtfScheduling(arrivalTimes, cpuTimes, ioTimes) {
                 continue;
             }
             cpuTimes[runningProcess][0]--;
+            processPriorities[runningProcess]--;
         }
 
         // Check if a blocked process has finished its IO burst
@@ -104,8 +107,8 @@ function srtfScheduling(arrivalTimes, cpuTimes, ioTimes) {
                 if (ioStartTimes[process].length > ioEndTimes[process].length) {
                     ioEndTimes[process].push(currentTime);
                 }
-                readyQueue.push({ id: process, cpuBurst: cpuTimes[process][0] });
-                readyQueue.sort(function(p1, p2) { return p1.cpuBurst - p2.cpuBurst });
+                readyQueue.push({ id: process, priority: processPriorities[process] });
+                readyQueue.sort(function(p1, p2) { return p2.priority - p1.priority });
                 blockedQueue.splice(i, 1);
                 processStates[process] = { state: 'ready', time: currentTime };
                 i--;
@@ -122,7 +125,7 @@ function srtfScheduling(arrivalTimes, cpuTimes, ioTimes) {
         if (runningProcess === null && readyQueue.length > 0) {
             continue;
         }
-        
+
         // Output the state of each process at the current time
         console.log(`Time: ${currentTime}`);
         for (let i = 0; i < n; i++) {

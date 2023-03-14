@@ -1,4 +1,6 @@
-function rrScheduling(arrivalTimes, cpuTimes, ioTimes, quantum) {
+var quantum = 3;
+
+function rrScheduling(arrivalTimes, cpuTimes, ioTimes) {
     const n = arrivalTimes.length;
     const arrivedProcesses = [];
     const readyQueue = [];
@@ -13,12 +15,18 @@ function rrScheduling(arrivalTimes, cpuTimes, ioTimes, quantum) {
     let waitingTimes = Array(n).fill(0);
     // let cpuSums = cpuTimes.map(process => process.reduce((acc, curr) => acc + curr));
     let cpuSums = cpuTimes.map(process => process.filter(t => !isNaN(t)).reduce((acc, curr) => acc + curr, 0));
-    let ioSums = Array(n).fill(0);
     const cpuStartTimes = Array(n).fill(null).map(_ => []);
     const cpuEndTimes = Array(n).fill(null).map(_ => []);
     let cpuTimesCopy = [];
     for (let i = 0; i < cpuTimes.length; i++) {
       cpuTimesCopy[i] = [...cpuTimes[i]];
+    }
+    let ioSums = Array(n).fill(0);
+    const ioStartTimes = Array(n).fill(null).map(_ => []);
+    const ioEndTimes = Array(n).fill(null).map(_ => []);
+    let ioTimesCopy = [];
+    for (let i = 0; i < ioTimes.length; i++) {
+        ioTimesCopy[i] = [...ioTimes[i]];
     }
   
     var currQuant = quantum;
@@ -32,15 +40,34 @@ function rrScheduling(arrivalTimes, cpuTimes, ioTimes, quantum) {
           processStates[i] = { state: 'ready', time: currentTime };
         }
       }
+
+      // Check for processes just unblocked and put them into ready queue before choosing the next process to run
+      for (let i = 0; i < blockedQueue.length; i++) {
+        const process = blockedQueue[i];
+        if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+          ioTimes[process].shift();
+          ioTimesCopy[process].shift();
+          if (ioStartTimes[process].length > ioEndTimes[process].length) {
+              ioEndTimes[process].push(currentTime);
+          }
+          readyQueue.push(process);
+          blockedQueue.splice(i, 1);
+          processStates[process] = { state: 'ready', time: currentTime };
+          i--;
+          continue;
+        }
+      }
   
       // If there is no running process, take the first process in the ready queue
       if (runningProcess === null && readyQueue.length > 0) {
         runningProcess = readyQueue.shift();
         if (responseTimes[runningProcess] === null) {
+          cpuStartTimes[runningProcess].push(currentTime);
           processStates[runningProcess] = { state: 'running', time: currentTime };
           responseTimes[runningProcess] = currentTime - arrivalTimes[runningProcess];
           currQuant = quantum;
         } else if (processStates[runningProcess].state !== 'running') {
+          cpuStartTimes[runningProcess].push(currentTime);
           processStates[runningProcess].state = 'running';
           currQuant = quantum;
         }
@@ -49,14 +76,19 @@ function rrScheduling(arrivalTimes, cpuTimes, ioTimes, quantum) {
       // Check if the running process has finished its CPU burst or has used up its time quantum
       if (runningProcess !== null) {
         if (isNaN(cpuTimes[runningProcess][0]) || cpuTimes[runningProcess][0] === 0) {
-            const cpuStartTime = currentTime - cpuTimesCopy[runningProcess][0];
-            const cpuEndTime = currentTime;
+            // const cpuStartTime = currentTime - cpuTimesCopy[runningProcess][0];
+            // const cpuEndTime = currentTime;
             // record CPU start and end times for running process
-            cpuStartTimes[runningProcess].push(cpuStartTime);
-            cpuEndTimes[runningProcess].push(cpuEndTime);
+            // cpuStartTimes[runningProcess].push(cpuStartTime);
+            // cpuEndTimes[runningProcess].push(cpuEndTime);
+            cpuEndTimes[runningProcess].push(currentTime);
             // If the process has no more CPU bursts, it is finished
             if (cpuTimes[runningProcess].length === 1 || isNaN(cpuTimes[runningProcess][1]) || 
                 (cpuTimes[runningProcess].length == 2 && cpuTimes[runningProcess][1] === 0)) {
+                if (ioTimes[runningProcess].length > 0 && !(isNaN(ioTimes[runningProcess][0]) || ioTimes[runningProcess][0] === 0)) {
+                  ioStartTimes[runningProcess].push(currentTime);
+                  ioEndTimes[runningProcess].push(currentTime + ioTimes[runningProcess][0]);
+                }
                 processStates[runningProcess] = { state: 'terminated', time: currentTime };
                 finishedCount++;
                 completionTimes[runningProcess] = currentTime;
@@ -73,6 +105,7 @@ function rrScheduling(arrivalTimes, cpuTimes, ioTimes, quantum) {
             continue;
         } else if (currQuant == 0) {
             // If time quantum expires, preemptively remove the current process from the CPU
+            cpuEndTimes[runningProcess].push(currentTime);
             readyQueue.push(runningProcess);
             processStates[runningProcess] = { state : 'ready', time: currentTime };
             runningProcess = null;
@@ -84,12 +117,20 @@ function rrScheduling(arrivalTimes, cpuTimes, ioTimes, quantum) {
       // Check if a blocked process has finished its IO burst
       for (let i = 0; i < blockedQueue.length; i++) {
         const process = blockedQueue[i];
-        if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
-          readyQueue.push(process);
-          blockedQueue.splice(i, 1);
-          processStates[process] = { state: 'ready', time: currentTime };
-          i--;
-          continue;
+        // if (ioTimes[process][0] === 0 || isNaN(ioTimes[process][0])) {
+        //   ioTimes[process].shift();
+        //   ioTimesCopy[process].shift();
+        //   if (ioStartTimes[process].length > ioEndTimes[process].length) {
+        //       ioEndTimes[process].push(currentTime);
+        //   }
+        //   readyQueue.push(process);
+        //   blockedQueue.splice(i, 1);
+        //   processStates[process] = { state: 'ready', time: currentTime };
+        //   i--;
+        //   continue;
+        // }
+        if (ioTimes[process][0] == ioTimesCopy[process][0]) {
+          ioStartTimes[process].push(currentTime);
         }
         ioTimes[process][0]--;
         ioSums[process]++;
@@ -118,5 +159,5 @@ function rrScheduling(arrivalTimes, cpuTimes, ioTimes, quantum) {
     console.log('Total CPU times:', cpuSums);
     console.log('CPU Start times:', cpuStartTimes);
     console.log('CPU End times:', cpuEndTimes);
-    return [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]
+    return [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]
   }

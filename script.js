@@ -40,34 +40,63 @@ function calculateAverage(){
     const io = ioTimes.map(arr => arr.slice(1));
     console.log(arrivalTimes, cpu, io);
     getAlgo();
-    if (algorithmOption == 1) {
+    var preemptive = true;
+    if (algorithmOption === 1) {
         var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=fcfsScheduling(arrivalTimes, cpu, io);
+        preemptive = false;
     }
-    else if (algorithmOption == 2) {
+    else if (algorithmOption === 2) {
         var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=sjfScheduling(arrivalTimes, cpu, io);
+        preemptive = false;
     }
-    else if (algorithmOption == 3) {
-        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=srtfScheduling(arrivalTimes, cpu, io);
+    else if (algorithmOption === 3) {
+        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]=srtfScheduling(arrivalTimes, cpu, io);
+    }
+    else if (algorithmOption === 4) {
+      // nonpreemptive priority
+    }
+    else if (algorithmOption === 5) {
+        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]=ppScheduling(arrivalTimes, cpu, io);
+    }
+    else if (algorithmOption === 6) {
+        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]=rrScheduling(arrivalTimes, cpu, io);
     }
     
     outputTableData(responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums);
-    var [ioStartTimes,ioEndTimes]=generateIO(cpuStartTimes,cpuEndTimes)
+    if (!preemptive) {
+      var [ioStartTimes,ioEndTimes]=generateIO(cpuStartTimes,cpuEndTimes)
+    }
     drawGanttChart(cpuStartTimes,cpuEndTimes,ioStartTimes,ioEndTimes)
 }
 
 function getAlgo(){
     var algoChoice = document.getElementById("algo").value;
-    if (algoChoice == "fcfs") {
-        algorithmOption = 1;
-        return;
+    if (algoChoice === "fcfs") {
+      algorithmOption = 1;
+      return;
     }    
-    if (algoChoice == "sjf") {
-        algorithmOption = 2;
-        return;
+    if (algoChoice === "sjf") {
+      algorithmOption = 2;
+      return;
     }
-    if (algoChoice == "srtf") {
-        algorithmOption = 3;
-        return;
+    if (algoChoice === "srtf") {
+      algorithmOption = 3;
+      return;
+    }
+    if (algoChoice === "pnp") {
+      algorithmOption = 4;
+      return;
+    }
+    if (algoChoice === "pp") {
+      algorithmOption = 5;
+      return;
+    }
+    if (algoChoice === "rr") {
+      algorithmOption = 6;
+      return;
+    }
+    if (algoChoice === "lot") {
+      algorithmOption = 7;
     }
 }
 
