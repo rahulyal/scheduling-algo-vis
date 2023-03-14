@@ -2,9 +2,9 @@
 // let cpuTimes = [[6, 1], [2], [1]];
 // let ioTimes = [[1], [0], [0]];
 
-let arrivalTimes = [0, 2, 2];
-let cpuTimes = [[3,1], [3,NaN], [3,NaN]];
-let ioTimes = [[1,NaN], [NaN,NaN], [NaN,NaN]];
+// let arrivalTimes = [0, 2, 2];
+// let cpuTimes = [[3,1], [3,NaN], [3,NaN]];
+// let ioTimes = [[1,NaN], [NaN,NaN], [NaN,NaN]];
 
 function fcfsScheduling(arrivalTimes, cpuTimes, ioTimes) {
   const n = arrivalTimes.length;
