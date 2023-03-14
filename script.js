@@ -56,7 +56,7 @@ function calculateAverage(){
       // nonpreemptive priority
     }
     else if (algorithmOption === 5) {
-        
+        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]=ppScheduling(arrivalTimes, cpu, io);
     }
     
     outputTableData(responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums);
