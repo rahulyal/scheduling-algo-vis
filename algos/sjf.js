@@ -2,9 +2,9 @@
 // let cpuTimes = [[6,1], [2], [1]];
 // let ioTimes = [[1], [0], [0]];
 
-let arrivalTimes = [0, 0];
-let cpuTimes = [[3,NaN], [2,6]];
-let ioTimes = [[1,NaN], [2,NaN]];
+let arrivalTimes = [0, 0,5];
+let cpuTimes = [[3,2], [2,6],[1]];
+let ioTimes = [[3,NaN], [1,NaN],[1]];
 
 function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     const n = arrivalTimes.length;
@@ -34,9 +34,11 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     for (let i = 0; i < n; i++) {
       if (arrivalTimes[i] === currentTime) {
         readyQueue.push({ id: i, cpuBurst: cpuTimes[i][0] });
+        console.log(readyQueue, currentTime, "READY")
         processStates[i] = { state: 'ready', time: currentTime };
       }
     }
+    console.log(readyQueue,"AFTERLOOP")
 
     if(readyQueue.length>0){// Sort the ready queue by remaining CPU time
       //sortShortest(readyQueue, cpuEndTimes, cpuTimes)
@@ -125,14 +127,14 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     console.log('CPU End times:', cpuEndTimes);
     return [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]
 }
-sjfScheduling(arrivalTimes, cpuTimes, ioTimes)
+sjfScheduling(arrivalTimes, cpuTimes.map((x)=>x.map(y=>y)),ioTimes.map((x)=>x.map(y=>y)))
 
 function sortShortest(readyQu, cpuEndTimes, cpuTimes){
   var shortestProcess = readyQu[0].id;
   var processIndex =0
   console.log(readyQu, "hI")
   
-  var shortestJob = cpuTimes[1][cpuEndTimes[shortestProcess].length]
+  var shortestJob = cpuTimes[shortestProcess][cpuEndTimes[shortestProcess].length]
   console.log(cpuEndTimes, "JI")
   for(var i = 0;i< readyQu.length;i++){
     process = readyQu[i].id

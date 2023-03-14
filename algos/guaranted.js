@@ -2,11 +2,12 @@
 // let cpuTimes = [[6,1], [2], [1]];
 // let ioTimes = [[1], [0], [0]];
 
-// let arrivalTimes = [0, 0];
-// let cpuTimes = [[3,NaN], [2,6]];
-// let ioTimes = [[1,NaN], [2,NaN]];
+let arrivalTimes = [0, 0];
+let cpuTimes = [[3,2], [2,6]];
+let ioTimes = [[3,NaN], [1,NaN]];
 
-function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
+function guaranScheduling(arrivalTimes, cpuTimes, ioTimes) {
+    let copyCPU = cpuTimes.map((x)=>x.map(y=>y))
     const n = arrivalTimes.length;
     const readyQueue = [];
     const blockedQueue = [];
@@ -27,24 +28,31 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     for (let i = 0; i < cpuTimes.length; i++) {
       cpuTimesCopy[i] = [...cpuTimes[i]];
     }
-
+    let arrProcesses = Array(n).fill(0);
 
   while (finishedCount < n) {
     // Check if there are any processes that arrived at the current time
     for (let i = 0; i < n; i++) {
-      if (arrivalTimes[i] === currentTime) {
-        readyQueue.push({ id: i, cpuBurst: cpuTimes[i][0] });
-        processStates[i] = { state: 'ready', time: currentTime };
+      if (arrivalTimes[i] == currentTime) {
+        if(arrProcesses[i]==0){
+            arrProcesses[i]=1
+            readyQueue.push({ id: i, cpuBurst: cpuTimes[i][0] });
+            console.log(readyQueue, currentTime, "READY")
+            processStates[i] = { state: 'ready', time: currentTime };
+        }
+
       }
     }
 
     if(readyQueue.length>0){// Sort the ready queue by remaining CPU time
-        sortFairness(readyQueue,cpuEndTimes,cpuTimes)
+        sortFairness(readyQueue,cpuEndTimes,copyCPU)
     }
 
     // If there is no running process, take the first process in the ready queue
     if (runningProcess === null && readyQueue.length > 0) {
+        console.log(readyQueue,"OLD    s")
       runningProcess = readyQueue.shift().id;
+      console.log(readyQueue,"NEW    s")
       if (responseTimes[runningProcess] === null) {
         processStates[runningProcess] = { state: 'running', time: currentTime };
         responseTimes[runningProcess] = currentTime - arrivalTimes[runningProcess];
@@ -112,7 +120,9 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     console.log('------');
     
     // Increment the current time
+    console.log(currentTime, "WORK")
     currentTime++;
+    console.log(currentTime, "DOES NOT END")
     console.log('Finished Count:', finishedCount);
   }
     console.log('Response times:', responseTimes);
@@ -125,25 +135,21 @@ function sjfScheduling(arrivalTimes, cpuTimes, ioTimes) {
     return [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]
 }
 
-function sortFairness(readyQu, cpuEndTimes, cpuTimes){
+function sortFairness(readyQu, cpuEndTimes,cpuTimesCopy){
     console.log(readyQu, "OLD")
-  var cpuSum = Array(readyQu.length).fill(0);
-  for(var i = 0;i< readyQu.length;i++){
-    process=readyQu[i]
-    for(var j =0;j<cpuEndTimes[i].length;j++){//Sum up all cpu used for each process
-        cpuSum[i]+=cpuTimes[process][j] 
-    }
-    var smallestCPU = Math.min(...cpuSum)//Find smallest consumed CPU time
-    var readyIndex = 0
-    while(readyIndex<readyQu.length){//Find the index in ready queue whose consumed cpu times is smallest
-        if(cpuSum[readyIndex]==smallestCPU){
-            break;
+    var cpuSum = Array(readyQu.length).fill(0);
+    for(var i = 0;i< readyQu.length;i++){
+        process=readyQu[i].id
+        for(var j =0;j<cpuEndTimes[process].length;j++){//Sum up all cpu used for each process
+            cpuSum[i]+=cpuTimesCopy[process][j] 
         }
-        readyIndex++;
     }
-  }
-  var fairestProcess = readyQu[readyIndex]
-  readyQu.splice(readyIndex, 1);
-  readyQu.unshift(fairestProcess)
-  console.log(readyQu, "NEW")
+    var readyIndex = cpuSum.indexOf(Math.min(...cpuSum))//Find the index in ready queue whose consumed cpu times is smallest
+    console.log(cpuEndTimes,cpuSum, Math.min(...cpuSum))
+    var fairestProcess = readyQu[readyIndex].id
+    var fairCpuBurst =readyQu[readyIndex].cpuBurst
+    readyQu.splice(readyIndex, 1);
+    readyQu.unshift({ id: fairestProcess, cpuBurst: fairCpuBurst })
+    console.log(readyQu, "NEW")
 }
+guaranScheduling(arrivalTimes, cpuTimes.map((x)=>x.map(y=>y)),ioTimes.map((x)=>x.map(y=>y)))
