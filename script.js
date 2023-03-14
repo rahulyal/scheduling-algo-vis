@@ -40,18 +40,23 @@ function calculateAverage(){
     const io = ioTimes.map(arr => arr.slice(1));
     console.log(arrivalTimes, cpu, io);
     getAlgo();
-    if (algorithmOption == 1) {
+    var preemptive = true;
+    if (algorithmOption === 1) {
         var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=fcfsScheduling(arrivalTimes, cpu, io);
+        preemptive = false;
     }
-    else if (algorithmOption == 2) {
+    else if (algorithmOption === 2) {
         var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=sjfScheduling(arrivalTimes, cpu, io);
+        preemptive = false;
     }
-    else if (algorithmOption == 3) {
-        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums]=srtfScheduling(arrivalTimes, cpu, io);
+    else if (algorithmOption === 3) {
+        var [responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums,ioStartTimes,ioEndTimes]=srtfScheduling(arrivalTimes, cpu, io);
     }
     
     outputTableData(responseTimes,turnaroundTimes,completionTimes,waitingTimes,cpuStartTimes,cpuEndTimes,cpuSums);
-    var [ioStartTimes,ioEndTimes]=generateIO(cpuStartTimes,cpuEndTimes)
+    if (!preemptive) {
+      var [ioStartTimes,ioEndTimes]=generateIO(cpuStartTimes,cpuEndTimes)
+    }
     drawGanttChart(cpuStartTimes,cpuEndTimes,ioStartTimes,ioEndTimes)
 }
 
