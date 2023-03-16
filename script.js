@@ -405,11 +405,11 @@ function findHighest(arr1,arr2){
 }
 
 function findInterval(deltaTime){//Find nice intervals that give less space
-  if(deltaTime<=5){
+  if(deltaTime<=10){
     return deltaTime
   }
-  var i =5.0
-  var interval = 5.0
+  var i =10.0
+  var interval = 10.0
   var low = deltaTime/i-Math.floor(deltaTime/i)
   while(i<=20.0){
     var lowI = deltaTime/i-Math.floor(deltaTime/i)
