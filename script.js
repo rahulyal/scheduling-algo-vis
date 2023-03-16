@@ -411,7 +411,7 @@ function findInterval(deltaTime){//Find nice intervals that give less space
   var i =5.0
   var interval = 5.0
   var low = deltaTime/i-Math.floor(deltaTime/i)
-  while(i<=10.0){
+  while(i<=20.0){
     var lowI = deltaTime/i-Math.floor(deltaTime/i)
     console.log(lowI,i)
     if(lowI<=low){
